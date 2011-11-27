@@ -1,0 +1,3 @@
+[submodule "vendor/slippy"]
+	path = vendor/slippy
+	url = https://github.com/Seldaek/slippy.git
