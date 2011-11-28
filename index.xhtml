@@ -22,6 +22,7 @@
 
         <!-- Syntax highlighting brushes, this one is only for php -->
         <script type="text/javascript" src="vendor/slippy/src/highlighter/shBrushPhp.js"></script>
+        <script type="text/javascript" src="vendor/slippy/src/highlighter/shBrushBash.js"></script>
 
         <!-- Syntax highlighting core CSS and a theme -->
         <link type="text/css" rel="stylesheet" href="vendor/slippy/src/highlighter/shCore.css"/>
@@ -79,14 +80,14 @@ mysql_query('INSERT INTO persons (greeting_id, name) VALUES (' . mysql_insert_id
             <h2>PDO</h2>
             <pre class="brush: php">
 try {
-$dbh = new PDO('mysql:host=localhost;dbname=test', 'user', 'password');
+    $dbh = new PDO('mysql:host=localhost;dbname=test', 'user', 'password');
+    $sth = $dbh-&gt;prepare('INSERT INTO greetings (content) VALUES (:content);
+    $sth-&gt;execute(array(':content' =&gt; $_POST['content']));
+    $sth = $dbh-&gt;prepare('INSERT INTO persons (greeting_id, name) VALUES (:greeting_id, :name)');
+    $sth-&gt;execute(array(':greeting_id' =&gt; $dbh-&gt;lastInsertId(), ':name' =&gt; $_POST['name']);
 } catch (PDOException $e) {
-echo $e-&gt;getMessage();
+    echo $e-&gt;getMessage();
 }
-$sth = $dbh-&gt;prepare('INSERT INTO greetings (content) VALUES (:content);
-$sth-&gt;execute(array(':content' =&gt; $_POST['content']));
-$sth = $dbh-&gt;prepare('INSERT INTO persons (greeting_id, name) VALUES (:greeting_id, :name)');
-$sth-&gt;execute(array(':greeting_id' =&gt; $dbh-&gt;lastInsertId(), ':name' =&gt; $_POST['name']);
             </pre>
         </div>
         <div class="slide">
@@ -98,25 +99,46 @@ $sth-&gt;execute(array(':greeting_id' =&gt; $dbh-&gt;lastInsertId(), ':name' =&g
                 Security is given by named parameters, escaped for us by PDO.
             </p>
             <p>
+                Exceptions are used, we can now catch them!
+            </p>
+            <p>
+                OOP friendly, we can extend PDO!
+            </p>
+            <p>
                 Queries are still performed in the SQL dialect of the vendor, which could make our code not 100% portable.
             </p>
         </div>
         <div class="slide">
             <h2>Doctrine 1.2</h2>
+            <p>An Active Record implementation:</p>
             <pre class="brush: php">
 class Greeting extends Doctrine_Record
 {
-public function setTableDefinition()
-{
-$this-&gt;setTableName('greetings');
-$this-&gt;hasColumn('content', 'string', 255, array('type' =&gt; 'string', 'length' =&gt; '255'));
-}
-public function setUp()
-{
-$this-&gt;hasMany('Person as Person', array('refClass' =&gt; 'Person',
-'local' =&gt; 'greeting_id',
-'foreign' =&gt; 'person_id'));
-}
+    public function setTableDefinition()
+    {
+        $this-&gt;setTableName('greetings');
+        $this-&gt;hasColumn(
+            'content',
+            'string',
+            255,
+            array(
+                'type' =&gt; 'string',
+                'length' =&gt; '255'
+            )
+        );
+    }
+    
+    public function setUp()
+    {
+        $this-&gt;hasMany(
+            'Person as Person',
+            array(
+                'refClass' =&gt; 'Person',
+                'local' =&gt; 'greeting_id',
+                'foreign' =&gt; 'person_id'
+            )
+        );
+    }
 }
             </pre>
         </div>
@@ -125,18 +147,40 @@ $this-&gt;hasMany('Person as Person', array('refClass' =&gt; 'Person',
             <pre class="brush: php">
 class Person extends Doctrine_Record
 {
-public function setTableDefinition()
-{
-$this-&gt;setTableName('persons');
-$this-&gt;hasColumn('name', 'string', 255, array('type' =&gt; 'string', 'length' =&gt; '255'));
-$this-&gt;hasColumn('greeting_id', 'string', 255, array('type' =&gt; 'string', 'length' =&gt; '255'));
-}
-public function setUp()
-{
-$this-&gt;hasOne('Greeting', array('refClass' =&gt; 'Greeting',
-'local' =&gt; 'greeting_id',
-'foreign' =&gt; 'id'));
-}
+    public function setTableDefinition()
+    {
+        $this-&gt;setTableName('persons');
+        $this-&gt;hasColumn(
+            'name',
+            'string',
+            255,
+            array(
+                'type' =&gt; 'string',
+                'length' =&gt; '255'
+            )
+        );
+        $this-&gt;hasColumn(
+            'greeting_id',
+            'string',
+            255,
+            array(
+                'type' =&gt; 'string',
+                'length' =&gt; '255'
+            )
+        );
+    }
+    
+    public function setUp()
+    {
+        $this-&gt;hasOne(
+            'Greeting',
+            array(
+                'refClass' =&gt; 'Greeting',
+                'local' =&gt; 'greeting_id',
+                'foreign' =&gt; 'id'
+            )
+        );
+    }
 }
             </pre>
         </div>
@@ -144,19 +188,25 @@ $this-&gt;hasOne('Greeting', array('refClass' =&gt; 'Greeting',
             <h2>Doctrine 1.2</h2>
             <pre class="brush: php">
 $greeting = new Greeting();
-$greeting->content = $_POST['content'];
-$greeting->save();
+$greeting-&gt;content = $_POST['content'];
+$greeting-&gt;save();
 $person = new Person();
-$person->name = $_POST['name'];
-$person->Greeting = $greeting;
-$greeting->Person[] = $person;
-$greeting->save();
+$person-&gt;name = $_POST['name'];
+$person-&gt;Greeting = $greeting;
+$greeting-&gt;Person[] = $person;
+$greeting-&gt;save();
             </pre>
         </div>
         <div class="slide">
             <h2>Doctrine 1.2</h2>
             <p>
-                Objects are mapped to DB by Doctrine.
+                Objects are written to DB by Doctrine (no more SQL!)
+            </p>
+            <p>
+                Object-Oriented
+            </p>
+            <p>
+                Database is abstracted by a powerful DBAL layer.
             </p>
             <p>
                 Table definition is set in our domain logic.
@@ -169,16 +219,195 @@ $greeting->save();
             </p>
         </div>
         <div class="slide">
-            <h2>Doctrine 2</h2>
+            <h2>What is Doctrine 2?</h2>
             <p>
-                A Data Mapper implementation:
+                Doctrine 2 is a Data Mapper implementation:
             </p>
             <p>
                 <img src="image/databaseMapperSketch.gif" alt="Data Mapper" width="60%"/>
             </p>
             <p>
-                Separates persistence and domain logic.
+                It separates persistence and domain logic. You are now able to port your logic to SQL, NoSQL, XML mappers, etc.
             </p>
+            <p>
+                It provides around 3X better performance than Doctrine 1.2.
+            </p>
+            <p>
+                Good news: your objects don't need to extend anything.
+                <br/>
+                You are free to save anything you want to your database.
+                <br/>
+                You can even map existing classes to database tables!
+            </p>
+        </div>
+        <div class="slide">
+            <h2>Doctrine 2 Requirements</h2>
+            <p>
+                PHP 5.3
+            </p>
+            <p>
+                Doctrine\Common library (bundled)
+            </p>
+            <p>
+                Doctrine\DBAL library (bundled)
+            </p>
+            <p>
+                Symfony\Component\Console (bundled)
+            </p>
+            <p>
+                Symfony\Component\Yaml (bundled, used if you need YAML configuration)
+            </p>
+            <p>
+                Autoloading (provided by Doctrine\Common, but you can use your own implementation)
+            </p>
+        </div>
+        <div class="slide">
+            <h2>Getting started</h2>
+            <pre class="brush: bash">
+mkdir doctrine-demo
+cd doctrine-demo
+mkdir library
+mkdir library/Entity
+mkdir library/EntityProxy
+git clone https://github.com/doctrine/doctrine2.git --recursive library/doctrine-orm
+touch bootstrap.php
+            </pre>
+        </div>
+        <div class="slide">
+            <h2>Getting started: getting the EntityManager</h2>
+            <pre class="brush: php">
+&lt;?php
+// bootstrap.php
+use Doctrine\ORM\Tools\Setup,
+    Doctrine\ORM\EntityManager,
+    Doctrine\ORM\Configuration,
+    Doctrine\Common\Cache\ArrayCache as Cache;
+
+//autoloading
+require_once 'library/doctrine-orm/lib/Doctrine/ORM/Tools/Setup.php';
+Setup::registerAutoloadGit(__DIR__ . 'library/doctrine-orm');
+
+//configuration
+$config = new Configuration();
+$cache = new Cache();
+$config-&gt;setQueryCacheImpl($cache);
+$config-&gt;setProxyDir(__DIR__ . '/library/EntityProxy');
+$config-&gt;setProxyNamespace('EntityProxy');
+$config-&gt;setAutoGenerateProxyClasses(true);
+
+//mapping (example uses annotations, could be any of XML/YAML or plain PHP)
+$driverImpl = $config-&gt;newDefaultAnnotationDriver(__DIR__ . '/library/Entity');
+$config-&gt;setMetadataDriverImpl($cache);
+$config-&gt;setMetadataCacheImpl($cache);
+
+//getting the EntityManager
+$em = EntityManager::create(array('driver' =&gt; 'pdo_sqlite', 'path' =&gt; 'database.sqlite'), $config);
+            </pre>
+        </div>
+        <div class="slide">
+            <h2>Getting started: mapping our entities</h2>
+            <pre class="brush: php">
+namespace Entity;
+
+use Doctrine\Common\Collections\ArrayCollection,
+    Entity\Person;
+
+class Greeting {
+    
+    /**
+     * @Id()
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="auto")
+     */
+    private $id;
+    
+    /**
+     * @Column(type="string", length=255)
+     */
+    private $content = '';
+    
+    /**
+     * @OneToMany(targetEntity="Entity\Person", mappedBy="greeting")
+     */
+    private $persons;
+    
+    public function __construct() {
+        $this->persons = new ArrayCollection();
+    }
+    
+    public function getId() {
+        return $this->id;
+    }
+    
+    public function getContent() {
+        return $this->content;
+    }
+    
+    public function setContent($content) {
+        $this->content = (string) $content;
+    }
+    
+    public function getPersons() {
+        return $this->persons;
+    }
+    
+    public function addPerson(Person $person) {
+        $this->persons->add($person);
+        $person->setGreeting($this);
+    }
+}
+            </pre>
+        </div>
+        <div class="slide">
+            <h2>Getting started: mapping our entities</h2>
+            <pre class="brush: php">
+namespace Entity;
+
+use Entity\Greeting;
+
+class Person {
+    
+    /**
+     * @Id()
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="auto")
+     */
+    private $id;
+    
+    /**
+     * @Column(type="string", length=255)
+     */
+    private $name = '';
+    
+    /**
+     * @ManyToOne(targetEntity="Entity\Greeting", inversedBy="persons")
+     */
+    private $greeting;
+    
+    public function getId() {
+        return $this->id;
+    }
+    
+    public function getName() {
+        return $this->name;
+    }
+    
+    public function setName($name) {
+        $this->name = (string) $name;
+    }
+    
+    public function getGreeting() {
+        return $this->greeting;
+    }
+    
+    public function setGreeting(Greeting $greeting) {
+        $this->greeting = $greeting;
+    }
+}
+            </pre>
+        </div>
+        <div class="slide">
+            <h2>TODO: CLI usage to generate schema</h2>
         </div>
     </body>
 </html>
