@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Doctrine 2 ORM Tutorial</title>
+        
+        <!-- jQuery + history plugin -->
+        <script type="text/javascript" src="vendor/slippy/src/jquery.min.js"></script>
+        <script type="text/javascript" src="vendor/slippy/src/jquery.history.js"></script>
+
+        <!-- Slippy core js file -->
+        <script type="text/javascript" src="vendor/slippy/src/slippy.js"></script>
+
+        <!-- Slippy structural styles -->
+        <link type="text/css" rel="stylesheet" href="vendor/slippy/src/slippy.css"/>
+
+        <!-- Slippy theme (feel free to change it) -->
+        <link type="text/css" rel="stylesheet" href="vendor/slippy/src/slippy-pure.css"/>
+        
+        <!-- Syntax highlighting core file  -->
+        <script type="text/javascript" src="vendor/slippy/src/highlighter/shCore.js"></script>
+
+        <!-- Syntax highlighting brushes, this one is only for php -->
+        <script type="text/javascript" src="vendor/slippy/src/highlighter/shBrushPhp.js"></script>
+
+        <!-- Syntax highlighting core CSS and a theme -->
+        <link type="text/css" rel="stylesheet" href="vendor/slippy/src/highlighter/shCore.css"/>
+        <link type="text/css" rel="stylesheet" href="vendor/slippy/src/highlighter/shThemeEclipse.css"/>
+        
+        <script type="text/javascript">
+            $(function() {
+                $(".slide").slippy({});
+                SyntaxHighlighter.all();
+            });
+        </script>
+
+    </head>
+    <body>
+        <div class="slide">
+            <h1>Doctrine 2 ORM</h1>
+            <h3>Leading Object Relational Mapper for PHP 5.3</h3>
+            <p>
+                <img src="image/Doctrine-Logo.png" alt="Doctrine"/>
+            </p>
+        </div>
+        <div class="slide">
+            <h2>Some history of persistence in PHP:</h2>
+            <ol>
+                <li>mysql_query, mysql_fetch_array, mysql_*</li>
+                <li>mysqli, PDO</li>
+                <li>Doctrine 1.2, Propel 1.6, Zend_Db</li>
+            </ol>
+        </div>
+        <div class="slide">
+            <h2>mysql_query</h2>
+            <pre class="brush: php">
+mysql_connect('localhost', 'user', 'password');
+mysql_select_db('test');
+mysql_query('INSERT INTO greetings (content) VALUES ("' . mysql_real_escape_string($_POST['greeting']) . '")');
+mysql_query('INSERT INTO persons (greeting_id, name) VALUES (' . mysql_insert_id() . ', "' . mysql_real_escape_string($_POST['person']) . '")');
+            </pre>
+        </div>
+        <div class="slide">
+            <h2>mysql_query</h2>
+            <p>
+                We had to write our queries and our security (mysql_real_escape_string()) by ourselves.
+            </p>
+            <p>
+                Also, we had to keep track of ids of the inserted fields by ourselves.
+            </p>
+            <p>
+                We had to rewrite every function name (and probably also functionality) when switching database vendor.
+            </p>
+            <p>
+                Not really OO friendly, heh?
+            </p>
+        </div>
+        <div class="slide">
+            <h2>PDO</h2>
+            <pre class="brush: php">
+try {
+$dbh = new PDO('mysql:host=localhost;dbname=test', 'user', 'password');
+} catch (PDOException $e) {
+echo $e-&gt;getMessage();
+}
+$sth = $dbh-&gt;prepare('INSERT INTO greetings (content) VALUES (:content);
+$sth-&gt;execute(array(':content' =&gt; $_POST['content']));
+$sth = $dbh-&gt;prepare('INSERT INTO persons (greeting_id, name) VALUES (:greeting_id, :name)');
+$sth-&gt;execute(array(':greeting_id' =&gt; $dbh-&gt;lastInsertId(), ':name' =&gt; $_POST['name']);
+            </pre>
+        </div>
+        <div class="slide">
+            <h2>PDO</h2>
+            <p>
+                We now can connect to different databases. MySQL is no more the only option!
+            </p>
+            <p>
+                Security is given by named parameters, escaped for us by PDO.
+            </p>
+            <p>
+                Queries are still performed in the SQL dialect of the vendor, which could make our code not 100% portable.
+            </p>
+        </div>
+        <div class="slide">
+            <h2>Doctrine 1.2</h2>
+            <pre class="brush: php">
+class Greeting extends Doctrine_Record
+{
+public function setTableDefinition()
+{
+$this-&gt;setTableName('greetings');
+$this-&gt;hasColumn('content', 'string', 255, array('type' =&gt; 'string', 'length' =&gt; '255'));
+}
+public function setUp()
+{
+$this-&gt;hasMany('Person as Person', array('refClass' =&gt; 'Person',
+'local' =&gt; 'greeting_id',
+'foreign' =&gt; 'person_id'));
+}
+}
+            </pre>
+        </div>
+        <div class="slide">
+            <h2>Doctrine 1.2</h2>
+            <pre class="brush: php">
+class Person extends Doctrine_Record
+{
+public function setTableDefinition()
+{
+$this-&gt;setTableName('persons');
+$this-&gt;hasColumn('name', 'string', 255, array('type' =&gt; 'string', 'length' =&gt; '255'));
+$this-&gt;hasColumn('greeting_id', 'string', 255, array('type' =&gt; 'string', 'length' =&gt; '255'));
+}
+public function setUp()
+{
+$this-&gt;hasOne('Greeting', array('refClass' =&gt; 'Greeting',
+'local' =&gt; 'greeting_id',
+'foreign' =&gt; 'id'));
+}
+}
+            </pre>
+        </div>
+        <div class="slide">
+            <h2>Doctrine 1.2</h2>
+            <pre class="brush: php">
+$greeting = new Greeting();
+$greeting->content = $_POST['content'];
+$greeting->save();
+$person = new Person();
+$person->name = $_POST['name'];
+$person->Greeting = $greeting;
+$greeting->Person[] = $person;
+$greeting->save();
+            </pre>
+        </div>
+        <div class="slide">
+            <h2>Doctrine 1.2</h2>
+            <p>
+                Objects are mapped to DB by Doctrine.
+            </p>
+            <p>
+                Table definition is set in our domain logic.
+            </p>
+            <p>
+                A lot of PHP "magic" is happening (__set, __get, etc.).
+            </p>
+            <p>
+                Our objects must extend Doctrine_Record to be used with Doctrine
+            </p>
+        </div>
+        <div class="slide">
+            <h2>Doctrine 2</h2>
+            <p>
+                A Data Mapper implementation:
+            </p>
+            <p>
+                <img src="image/databaseMapperSketch.gif" alt="Data Mapper" width="60%"/>
+            </p>
+            <p>
+                Separates persistence and domain logic.
+            </p>
+        </div>
+    </body>
+</html>
