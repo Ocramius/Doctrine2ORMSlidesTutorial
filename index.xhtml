@@ -791,11 +791,14 @@ Database schema created successfully!
             <h2>Working with the EntityManager</h2>
         </div>
         <div class="slide">
-            <h3>Saving a "Greeting" object</h3>
+            <h3>Saving a "Entity\Greeting" object</h3>
             <pre class="brush: php">
 &lt;?php
 //examples/1.php
-require_once __DIR__ . '/bootstrap.php';
+
+use Entity\Greeting;
+
+require_once __DIR__ . '/../bootstrap.php';
 
 //Creating our greeting
 $greeting = new Greeting('Hello World!');
@@ -805,6 +808,123 @@ $em->persist($greeting);
 
 //Flushing all changes to database
 $em->flush();
+
+echo 'OK!';
+            </pre>
+        </div>
+        <div class="slide">
+            <h3>Retrieving an "Entity\Greeting" object</h3>
+            <pre class="brush: php">
+&lt;?php
+//examples/2.php
+require_once __DIR__ . '/../bootstrap.php';
+
+//Finding Greeting with id = 1
+$greeting = $em->find('Entity\Greeting', 1);
+
+if($greeting) {
+    //The EntityManager has already provided us an object of type Entity\Greeting!
+    echo 'Found a greeting (instance of ' . get_class($greeting)
+        . ') with content ' . $greeting->getContent();
+}else{
+    echo 'Couldn\'t find Greeting with id=1';
+}
+            </pre>
+        </div>
+        <div class="slide">
+            <h3>Updating an "Entity\Greeting" object</h3>
+            <pre class="brush: php">
+&lt;?php
+//examples/3.php
+require_once __DIR__ . '/../bootstrap.php';
+
+//Finding Greeting with id = 1
+$greeting = $em->find('Entity\Greeting', 1);
+
+if($greeting) {
+    echo $greeting->getContent() . PHP_EOL;
+    echo 'Changing the contents of found Greeting to "Hello Test!"' . PHP_EOL;
+    //Using Entity\Greeting to set a new content for the $greeting!
+    $greeting->setContent('Hello Test!');
+    //Flushing changes to database (triggers SQL updates)
+    $em->flush();
+    echo 'Now try loading 2.php again!' . PHP_EOL;
+}else{
+    echo 'Couldn\'t find Greeting with id=1';
+}
+            </pre>
+        </div>
+        <div class="slide">
+            <h3>Finding "Entity\Greeting" objects</h3>
+            <pre class="brush: php">
+&lt;?php
+//examples/4.php
+require_once __DIR__ . '/../bootstrap.php';
+
+//A repository is like a "Table" containing our entities of a specified type
+$repository = $em->getRepository('Entity\Greeting');
+
+//Finding all Entity\Greeting with content = "Hello World!"
+$worldGreetings = $repository->findBy(array('content' => 'Hello World!'));
+
+//Finding all Entity\Greeting with content = "Hello Test!"
+$testGreetings = $repository->findBy(array('content' => 'Hello Test!'));
+
+//Displaying results
+echo 'Found ' . count($worldGreetings) . ' "Hello World!" greetings:' . PHP_EOL;
+foreach($worldGreetings as $worldGreeting) {
+    echo ' - ' . $worldGreeting->getId() . PHP_EOL;
+}
+
+echo 'Found ' . count($testGreetings) . ' "Hello World!" greetings:' . PHP_EOL;
+foreach($testGreetings as $testGreeting) {
+    echo ' - ' . $testGreeting->getId() . PHP_EOL;
+}
+            </pre>
+        </div>
+        <div class="slide">
+            <h3>Retrieving "Entity\Greeting" objects via DQL</h3>
+            <pre class="brush: php">
+&lt;?php
+//examples/5.php
+require_once __DIR__ . '/../bootstrap.php';
+
+//Creating a DQL query that selects all greetings with id >= 5 and id &lt;= 10
+$greetings = $em
+    ->createQuery('SELECT g FROM Entity\Greeting g WHERE g.id >= 5 AND g.id &lt;= 10')
+    ->getResult();
+
+//Displaying results
+echo 'Found ' . count($greetings) . ' Entity\Greeting:' . PHP_EOL;
+foreach($greetings as $greeting) {
+    echo ' - ' . $greeting->getId() . ' => ' . $greeting->getContent() . PHP_EOL;
+}
+            </pre>
+        </div>
+        <div class="slide">
+            <h3>Deleting "Entity\Greeting" objects</h3>
+            <pre class="brush: php">
+&lt;?php
+//examples/6.php
+require_once __DIR__ . '/../bootstrap.php';
+
+//Finding the last inserted greeting
+$greetings = $em
+    ->createQuery('SELECT g FROM Entity\Greeting g ORDER BY g.id DESC')
+    ->setMaxResults(1) //we want only one result
+    ->getResult();
+
+if(!empty($greetings)) {
+    $greeting = reset($greetings);
+    echo 'Found greeting with id "' . $greeting->getId()
+        . '" and content "' . $greeting->getContent() . '"' . PHP_EOL;
+    $em->remove($greeting);
+    //Triggers delete
+    $em->flush();
+    echo 'Greeting deleted!' . PHP_EOL;
+} else {
+    echo 'Could not find any Greeting' . PHP_EOL;
+}
             </pre>
         </div>
     </body>
