@@ -274,93 +274,11 @@ cd doctrine-demo
 mkdir library
 mkdir library/Entity
 mkdir library/EntityProxy
+chmod +w library/EntityProxy
+touch library/Entity/Greeting.php
+touch library/Entity/Person.php
 git clone https://github.com/doctrine/doctrine2.git --recursive library/doctrine-orm
 touch bootstrap.php
-            </pre>
-        </div>
-        <div class="slide">
-            <h2>Getting started: getting the EntityManager</h2>
-        </div>
-        <div class="slide">
-            <h3>Autoloading:</h3>
-            <pre class="brush: php">
-&lt;?php
-// bootstrap.php
-use Doctrine\ORM\Tools\Setup,
-    Doctrine\ORM\EntityManager,
-    Doctrine\ORM\Configuration,
-    Doctrine\Common\Cache\ArrayCache as Cache;
-
-//autoloading
-require_once 'library/doctrine-orm/lib/Doctrine/ORM/Tools/Setup.php';
-Setup::registerAutoloadGit(__DIR__ . 'library/doctrine-orm');
-            </pre>
-        </div>
-        <div class="slide">
-            <h3>Configuration and metadata</h3>
-            <pre class="brush: php">
-//configuration
-$config = new Configuration();
-$cache = new Cache();
-$config-&gt;setQueryCacheImpl($cache);
-$config-&gt;setProxyDir(__DIR__ . '/library/EntityProxy');
-$config-&gt;setProxyNamespace('EntityProxy');
-$config-&gt;setAutoGenerateProxyClasses(true);
-
-//mapping (example uses annotations, could be any of XML/YAML or plain PHP)
-$driverImpl = $config-&gt;newDefaultAnnotationDriver(__DIR__ . '/library/Entity');
-$config-&gt;setMetadataDriverImpl($cache);
-$config-&gt;setMetadataCacheImpl($cache);
-            </pre>
-        </div>
-        <div class="slide">
-            <h3>Creating the EntityManager</h3>
-            <pre class="brush: php">
-//getting the EntityManager
-$em = EntityManager::create(
-    array(
-        'driver' =&gt; 'pdo_sqlite',
-        'path' =&gt; 'database.sqlite'
-    ),
-    $config
-);
-            </pre>
-        </div>
-        <div class="slide">
-            <h3>Final result:</h3>
-            <pre class="brush: php">
-&lt;?php
-// bootstrap.php
-use Doctrine\ORM\Tools\Setup,
-    Doctrine\ORM\EntityManager,
-    Doctrine\ORM\Configuration,
-    Doctrine\Common\Cache\ArrayCache as Cache;
-
-//autoloading
-require_once 'library/doctrine-orm/lib/Doctrine/ORM/Tools/Setup.php';
-Setup::registerAutoloadGit(__DIR__ . 'library/doctrine-orm');
-
-//configuration
-$config = new Configuration();
-$cache = new Cache();
-$config-&gt;setQueryCacheImpl($cache);
-$config-&gt;setProxyDir(__DIR__ . '/library/EntityProxy');
-$config-&gt;setProxyNamespace('EntityProxy');
-$config-&gt;setAutoGenerateProxyClasses(true);
-
-//mapping (example uses annotations, could be any of XML/YAML or plain PHP)
-$driverImpl = $config-&gt;newDefaultAnnotationDriver(__DIR__ . '/library/Entity');
-$config-&gt;setMetadataDriverImpl($cache);
-$config-&gt;setMetadataCacheImpl($cache);
-
-//getting the EntityManager
-$em = EntityManager::create(
-    array(
-        'driver' =&gt; 'pdo_sqlite',
-        'path' =&gt; 'database.sqlite'
-    ),
-    $config
-);
             </pre>
         </div>
         <div class="slide">
@@ -690,7 +608,92 @@ class Person
             </pre>
         </div>
         <div class="slide">
-            <h2>TODO: CLI usage to generate schema</h2>
+            <h2>Getting started: getting the EntityManager</h2>
+        </div>
+        <div class="slide">
+            <h3>Autoloading:</h3>
+            <pre class="brush: php">
+&lt;?php
+// bootstrap.php
+use Doctrine\ORM\Tools\Setup,
+    Doctrine\ORM\EntityManager,
+    Doctrine\ORM\Configuration,
+    Doctrine\Common\Cache\ArrayCache as Cache;
+
+//autoloading
+require_once 'library/doctrine-orm/lib/Doctrine/ORM/Tools/Setup.php';
+Setup::registerAutoloadGit(__DIR__ . 'library/doctrine-orm');
+            </pre>
+        </div>
+        <div class="slide">
+            <h3>Configuration and metadata</h3>
+            <pre class="brush: php">
+//configuration
+$config = new Configuration();
+$cache = new Cache();
+$config-&gt;setQueryCacheImpl($cache);
+$config-&gt;setProxyDir(__DIR__ . '/library/EntityProxy');
+$config-&gt;setProxyNamespace('EntityProxy');
+$config-&gt;setAutoGenerateProxyClasses(true);
+
+//mapping (example uses annotations, could be any of XML/YAML or plain PHP)
+$driverImpl = $config-&gt;newDefaultAnnotationDriver(__DIR__ . '/library/Entity');
+$config-&gt;setMetadataDriverImpl($cache);
+$config-&gt;setMetadataCacheImpl($cache);
+            </pre>
+        </div>
+        <div class="slide">
+            <h3>Creating the EntityManager</h3>
+            <pre class="brush: php">
+//getting the EntityManager
+$em = EntityManager::create(
+    array(
+        'driver' =&gt; 'pdo_sqlite',
+        'path' =&gt; 'database.sqlite'
+    ),
+    $config
+);
+            </pre>
+        </div>
+        <div class="slide">
+            <h3>Final result:</h3>
+            <pre class="brush: php">
+&lt;?php
+// bootstrap.php
+use Doctrine\ORM\Tools\Setup,
+    Doctrine\ORM\EntityManager,
+    Doctrine\ORM\Configuration,
+    Doctrine\Common\Cache\ArrayCache as Cache;
+
+//autoloading
+require_once 'library/doctrine-orm/lib/Doctrine/ORM/Tools/Setup.php';
+Setup::registerAutoloadGit(__DIR__ . 'library/doctrine-orm');
+
+//configuration
+$config = new Configuration();
+$cache = new Cache();
+$config-&gt;setQueryCacheImpl($cache);
+$config-&gt;setProxyDir(__DIR__ . '/library/EntityProxy');
+$config-&gt;setProxyNamespace('EntityProxy');
+$config-&gt;setAutoGenerateProxyClasses(true);
+
+//mapping (example uses annotations, could be any of XML/YAML or plain PHP)
+$driverImpl = $config-&gt;newDefaultAnnotationDriver(__DIR__ . '/library/Entity');
+$config-&gt;setMetadataDriverImpl($cache);
+$config-&gt;setMetadataCacheImpl($cache);
+
+//getting the EntityManager
+$em = EntityManager::create(
+    array(
+        'driver' =&gt; 'pdo_sqlite',
+        'path' =&gt; 'database.sqlite'
+    ),
+    $config
+);
+            </pre>
+        </div>
+        <div class="slide">
+            <h2>Generating the schema</h2>
         </div>
     </body>
 </html>
