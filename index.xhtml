@@ -572,8 +572,7 @@ class Greeting
      */
     private $persons;
     
-    public function <strong>__construct($content)</strong> {
-        <strong>//We use ArrayCollections instead of a simple arrays in Doctrine</strong>
+    public function __construct($content) {
         $this->persons = new ArrayCollection();
         $this->setContent($content);
     }
@@ -581,35 +580,35 @@ class Greeting
     /**
      * @return int
      */
-    public function <strong>getId()</strong> {
+    public function getId() {
         return $this->id;
     }
     
     /**
      * @return string
      */
-    public function <strong>getContent()</strong> {
+    public function getContent() {
         return $this->content;
     }
     
     /**
      * @param string $content
      */
-    public function <strong>setContent($content)</strong> {
+    public function setContent($content) {
         $this->content = (string) $content;
     }
     
     /**
      * @return Collection
      */
-    public function <strong>getPersons()</strong> {
+    public function getPersons() {
         return $this->persons;
     }
     
     /**
      * @param Person $person
      */
-    public function <strong>addPerson(Person $person)</strong> {
+    public function addPerson(Person $person) {
         $this->persons->add($person);
         $person->setGreeting($this);
     }
@@ -642,12 +641,12 @@ class Person
     private $name;
     
     /**
-     * @ManyToOne(targetEntity="Entity\Greeting", inversedBy="persons")
+     * <strong>@ManyToOne(targetEntity="Entity\Greeting", inversedBy="persons")</strong>
      * @var Greeting
      */
     private $greeting;
     
-    public function <strong>__construct(Greeting $greeting, $name)</strong> {
+    public function __construct(Greeting $greeting, $name) {
         $this->setName($name);
         $this->setGreeting($greeting);
     }
@@ -655,35 +654,35 @@ class Person
     /**
      * @return int
      */
-    public function <strong>getId()</strong> {
+    public function getId() {
         return $this->id;
     }
     
     /**
      * @return string
      */
-    public function <strong>getName()</strong> {
+    public function getName() {
         return $this->name;
     }
     
     /**
      * @param string $name
      */
-    public function <strong>getName($name)</strong> {
+    public function getName($name) {
         $this->name = (string) $name;
     }
     
     /**
      * @return Greeting
      */
-    public function <strong>getGreeting()</strong> {
+    public function getGreeting() {
         return $this->greeting;
     }
     
     /**
      * @param Greeting $greeting
      */
-    public function <strong>addPerson(Greeting $greeting)</strong> {
+    public function addPerson(Greeting $greeting) {
         $this->greeting = $greeting;
     }
 
