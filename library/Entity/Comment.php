@@ -1,15 +1,13 @@
 <?php
 namespace Entity;
 
-use Doctrine\Common\Collections\Collection,
-    Doctrine\Common\Collections\ArrayCollection,
-    Entity\Person,
+use Entity\User,
     Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity 
  */
-class Greeting
+class Comment
 {
     
     /**
@@ -25,6 +23,12 @@ class Greeting
      * @var string
      */
     private $content;
+    
+    /**
+     * @ORM\ManyToOne(targetEntity="Entity\User", inversedBy="comments")
+     * @var User|null
+     */
+    private $user;
     
     public function __construct($content) {
         $this->setContent($content);
@@ -47,8 +51,22 @@ class Greeting
     /**
      * @param string $content
      */
-    public function setContent($content) {
+    public function setName($content) {
         $this->content = (string) $content;
     }
     
+    /**
+     * @return User|null
+     */
+    public function getUser() {
+        return $this->user;
+    }
+    
+    /**
+     * @param User $user
+     */
+    public function addPerson(User $user) {
+        $this->user = $user;
+    }
+
 }
