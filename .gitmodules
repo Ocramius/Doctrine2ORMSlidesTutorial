@@ -1,3 +1,6 @@
 [submodule "vendor/slippy"]
 	path = vendor/slippy
 	url = https://github.com/Seldaek/slippy.git
+[submodule "library/doctrine-orm"]
+	path = library/doctrine-orm
+	url = https://github.com/doctrine/doctrine2.git
