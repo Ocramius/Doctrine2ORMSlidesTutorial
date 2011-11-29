@@ -246,7 +246,10 @@ $greeting-&gt;save();
             </ul>
         </div>
         <div class="slide">
-            <h2>What is Doctrine 2?</h2>
+            <h2>Doctrine 2</h2>
+        </div>
+        <div class="slide">
+            <h3>What is Doctrine 2?</h3>
             <p>
                 Doctrine 2 is a Data Mapper implementation:
             </p>
@@ -271,24 +274,31 @@ $greeting-&gt;save();
         </div>
         <div class="slide">
             <h2>Doctrine 2 Requirements</h2>
-            <p>
-                PHP 5.3
-            </p>
-            <p>
-                Doctrine\Common library (bundled)
-            </p>
-            <p>
-                Doctrine\DBAL library (bundled)
-            </p>
-            <p>
-                Symfony\Component\Console (bundled)
-            </p>
-            <p>
-                Symfony\Component\Yaml (bundled, used if you need YAML configuration)
-            </p>
-            <p>
-                Autoloading (provided by Doctrine\Common, but you can use your own implementation)
-            </p>
+            <ul>
+                <li>
+                    PHP 5.3
+                </li>
+                <li>
+                    Doctrine\Common (bundled)
+                    <br/>
+                    &#160;&#160;A set of utilities common to all Doctrine projects
+                </li>
+                <li>
+                    Doctrine\DBAL (bundled)
+                    <br/>
+                    &#160;&#160;A very powerful Database ABstraction Layer
+                </li>
+                <li>
+                    Symfony\Component\Console (bundled)
+                    <br/>
+                    &#160;&#160;A CLI runner tool
+                </li>
+                <li>
+                    Symfony\Component\Yaml (bundled)
+                    <br/>
+                    &#160;&#160;If you work with YAML configuration
+                </li>
+            </ul>
         </div>
         <div class="slide">
             <h2>Getting started</h2>
@@ -733,7 +743,7 @@ $em = EntityManager::create(
 use Symfony\Component\Console\Helper\HelperSet,
     Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper,
     Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper,
-    \Doctrine\ORM\Tools\Console\ConsoleRunner;
+    Doctrine\ORM\Tools\Console\ConsoleRunner;
 require_once __DIR__ . '/bootstrap.php';
 
 $helperSet = new HelperSet(array(
@@ -756,6 +766,12 @@ Database schema created successfully!
         <div class="slide">
             <p>Generated database as seen by SQLite browser</p>
             <img src="image/database-status.png" alt="Generated Database"/>
+        </div>
+        <div class="slide">
+            <h2>Working with the EntityManager</h2>
+            <pre class="slide">
+
+            </pre>
         </div>
     </body>
 </html>
