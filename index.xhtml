@@ -746,7 +746,16 @@ ConsoleRunner::run($helperSet);
         <div class="slide">
             <h3>Generating the schema</h3>
             <pre class="brush: bash">
+$ php doctrine-cli.php orm:schema-tool:create
+ATTENTION: This operation should not be executed in a production environment.
+
+Creating database schema...
+Database schema created successfully!
             </pre>
+        </div>
+        <div class="slide">
+            <p>Generated database as seen by SQLite browser</p>
+            <img src="image/database-status.png" alt="Generated Database"/>
         </div>
     </body>
 </html>
