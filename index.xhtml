@@ -34,7 +34,12 @@
                 SyntaxHighlighter.all();
             });
         </script>
-
+        <style type="text/css">
+            pre {
+                font-size: 60%;
+                line-height: 0.8;
+            }
+        </style>
     </head>
     <body>
         <div class="slide">
@@ -275,6 +280,54 @@ touch bootstrap.php
         </div>
         <div class="slide">
             <h2>Getting started: getting the EntityManager</h2>
+        </div>
+        <div class="slide">
+            <h3>Autoloading:</h3>
+            <pre class="brush: php">
+&lt;?php
+// bootstrap.php
+use Doctrine\ORM\Tools\Setup,
+    Doctrine\ORM\EntityManager,
+    Doctrine\ORM\Configuration,
+    Doctrine\Common\Cache\ArrayCache as Cache;
+
+//autoloading
+require_once 'library/doctrine-orm/lib/Doctrine/ORM/Tools/Setup.php';
+Setup::registerAutoloadGit(__DIR__ . 'library/doctrine-orm');
+            </pre>
+        </div>
+        <div class="slide">
+            <h3>Configuration and metadata</h3>
+            <pre class="brush: php">
+//configuration
+$config = new Configuration();
+$cache = new Cache();
+$config-&gt;setQueryCacheImpl($cache);
+$config-&gt;setProxyDir(__DIR__ . '/library/EntityProxy');
+$config-&gt;setProxyNamespace('EntityProxy');
+$config-&gt;setAutoGenerateProxyClasses(true);
+
+//mapping (example uses annotations, could be any of XML/YAML or plain PHP)
+$driverImpl = $config-&gt;newDefaultAnnotationDriver(__DIR__ . '/library/Entity');
+$config-&gt;setMetadataDriverImpl($cache);
+$config-&gt;setMetadataCacheImpl($cache);
+            </pre>
+        </div>
+        <div class="slide">
+            <h3>Creating the EntityManager</h3>
+            <pre class="brush: php">
+//getting the EntityManager
+$em = EntityManager::create(
+    array(
+        'driver' =&gt; 'pdo_sqlite',
+        'path' =&gt; 'database.sqlite'
+    ),
+    $config
+);
+            </pre>
+        </div>
+        <div class="slide">
+            <h3>Final result:</h3>
             <pre class="brush: php">
 &lt;?php
 // bootstrap.php
@@ -301,108 +354,339 @@ $config-&gt;setMetadataDriverImpl($cache);
 $config-&gt;setMetadataCacheImpl($cache);
 
 //getting the EntityManager
-$em = EntityManager::create(array('driver' =&gt; 'pdo_sqlite', 'path' =&gt; 'database.sqlite'), $config);
+$em = EntityManager::create(
+    array(
+        'driver' =&gt; 'pdo_sqlite',
+        'path' =&gt; 'database.sqlite'
+    ),
+    $config
+);
             </pre>
         </div>
         <div class="slide">
-            <h2>Getting started: mapping our entities</h2>
+            <h2>Create entities...</h2>
+        </div>
+        <div class="slide">
+            <h3>Entity\Greeting</h3>
             <pre class="brush: php">
 namespace Entity;
 
-use Doctrine\Common\Collections\ArrayCollection,
-    Entity\Person;
+use Entity\Person;
 
-class Greeting {
-    
-    /**
-     * @Id()
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="auto")
-     */
+class Greeting
+{
+    /** @var int */
     private $id;
     
-    /**
-     * @Column(type="string", length=255)
-     */
-    private $content = '';
+    /** @var string */
+    private $content;
     
-    /**
-     * @OneToMany(targetEntity="Entity\Person", mappedBy="greeting")
-     */
+    /** @var Person[] */
     private $persons;
     
-    public function __construct() {
-        $this->persons = new ArrayCollection();
-    }
-    
-    public function getId() {
-        return $this->id;
-    }
-    
-    public function getContent() {
-        return $this->content;
-    }
-    
-    public function setContent($content) {
-        $this->content = (string) $content;
-    }
-    
-    public function getPersons() {
-        return $this->persons;
-    }
-    
-    public function addPerson(Person $person) {
-        $this->persons->add($person);
-        $person->setGreeting($this);
-    }
 }
             </pre>
         </div>
         <div class="slide">
-            <h2>Getting started: mapping our entities</h2>
+            <h3>Entity\Person</h3>
             <pre class="brush: php">
 namespace Entity;
 
 use Entity\Greeting;
 
-class Person {
+class Person
+{
+    
+    /** @var int */
+    private $id;
+    
+    /** @var string */
+    private $name;
+    
+    /** @var Greeting */
+    private $greeting;
+    
+}
+            </pre>
+        </div>
+        <div class="slide">
+            <h2>...add getters, setters, constructors, other methods...</h2>
+        </div>
+        <div class="slide">
+            <h3>Constructor and setters/getters of Entity\Greeting</h3>
+            <pre class="brush: php">
+namespace Entity;
+
+use Doctrine\Common\Collections\Collection,
+    Doctrine\Common\Collections\ArrayCollection,
+    Entity\Person;
+
+class Greeting
+{
+    
+    /** @var int */
+    private $id;
+    
+    /** @var string */
+    private $content;
+    
+    /** @var Collection */
+    private $persons;
+    
+    public function <strong>__construct($content)</strong> {
+        <strong>//We use ArrayCollections instead of a simple arrays in Doctrine</strong>
+        $this->persons = new ArrayCollection();
+        $this->setContent($content);
+    }
     
     /**
-     * @Id()
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="auto")
+     * @return int
+     */
+    public function <strong>getId()</strong> {
+        return $this->id;
+    }
+    
+    /**
+     * @return string
+     */
+    public function <strong>getContent()</strong> {
+        return $this->content;
+    }
+    
+    /**
+     * @param string $content
+     */
+    public function <strong>setContent($content)</strong> {
+        $this->content = (string) $content;
+    }
+    
+    /**
+     * @return Collection
+     */
+    public function <strong>getPersons()</strong> {
+        return $this->persons;
+    }
+    
+    /**
+     * @param Person $person
+     */
+    public function <strong>addPerson(Person $person)</strong> {
+        $this->persons->add($person);
+        $person->setGreeting($this);
+    }
+
+}
+            </pre>
+        </div>
+        <div class="slide">
+            <h3>Constructor and setters/getters of Entity\Person</h3>
+            <pre class="brush: php">
+namespace Entity;
+
+use Entity\Greeting;
+
+class Person
+{
+    
+    /** @var int */
+    private $id;
+    
+    /** @var string */
+    private $name;
+    
+    /** @var Greeting */
+    private $greeting;
+    
+    public function <strong>__construct(Greeting $greeting, $name)</strong> {
+        $this->setName($name);
+        $this->setGreeting($greeting);
+    }
+    
+    /**
+     * @return int
+     */
+    public function <strong>getId()</strong> {
+        return $this->id;
+    }
+    
+    /**
+     * @return string
+     */
+    public function <strong>getName()</strong> {
+        return $this->name;
+    }
+    
+    /**
+     * @param string $name
+     */
+    public function <strong>getName($name)</strong> {
+        $this->name = (string) $name;
+    }
+    
+    /**
+     * @return Greeting
+     */
+    public function <strong>getGreeting()</strong> {
+        return $this->greeting;
+    }
+    
+    /**
+     * @param Greeting $greeting
+     */
+    public function <strong>addPerson(Greeting $greeting)</strong> {
+        $this->greeting = $greeting;
+    }
+
+}
+            </pre>
+        </div>
+        <div class="slide">
+            <h3>Mapping (@Annotations) Entity\Greeting</h3>
+            <pre class="brush: php">
+namespace Entity;
+
+use Doctrine\Common\Collections\Collection,
+    Doctrine\Common\Collections\ArrayCollection,
+    Entity\Person;
+
+class Greeting
+{
+    
+    /**
+     * <strong>@Id()</strong>
+     * <strong>@Column(type="integer")</strong>
+     * <strong>@GeneratedValue(strategy="auto")</strong>
+     * @var int
      */
     private $id;
     
     /**
-     * @Column(type="string", length=255)
+     * <strong>@Column(type="string", length=255)</strong>
+     * @var string
      */
-    private $name = '';
+    private $content;
     
     /**
-     * @ManyToOne(targetEntity="Entity\Greeting", inversedBy="persons")
+     * <strong>@OneToMany(targetEntity="Entity\Person", mappedBy="greeting")</strong>
+     * @var Collection
      */
-    private $greeting;
+    private $persons;
     
-    public function getId() {
+    public function <strong>__construct($content)</strong> {
+        <strong>//We use ArrayCollections instead of a simple arrays in Doctrine</strong>
+        $this->persons = new ArrayCollection();
+        $this->setContent($content);
+    }
+    
+    /**
+     * @return int
+     */
+    public function <strong>getId()</strong> {
         return $this->id;
     }
     
-    public function getName() {
+    /**
+     * @return string
+     */
+    public function <strong>getContent()</strong> {
+        return $this->content;
+    }
+    
+    /**
+     * @param string $content
+     */
+    public function <strong>setContent($content)</strong> {
+        $this->content = (string) $content;
+    }
+    
+    /**
+     * @return Collection
+     */
+    public function <strong>getPersons()</strong> {
+        return $this->persons;
+    }
+    
+    /**
+     * @param Person $person
+     */
+    public function <strong>addPerson(Person $person)</strong> {
+        $this->persons->add($person);
+        $person->setGreeting($this);
+    }
+
+}
+            </pre>
+        </div>
+        <div class="slide">
+            <h3>Mapping (@Annotations) Entity\Person</h3>
+            <pre class="brush: php">
+namespace Entity;
+
+use Entity\Greeting;
+
+class Person
+{
+    
+    /**
+     * <strong>@Id()</strong>
+     * <strong>@Column(type="integer")</strong>
+     * <strong>@GeneratedValue(strategy="auto")</strong>
+     * @var int
+     */
+    private $id;
+    
+    /**
+     * <strong>@Column(type="string", length=255)</strong>
+     * @var string
+     */
+    private $name;
+    
+    /**
+     * @ManyToOne(targetEntity="Entity\Greeting", inversedBy="persons")
+     * @var Greeting
+     */
+    private $greeting;
+    
+    public function <strong>__construct(Greeting $greeting, $name)</strong> {
+        $this->setName($name);
+        $this->setGreeting($greeting);
+    }
+    
+    /**
+     * @return int
+     */
+    public function <strong>getId()</strong> {
+        return $this->id;
+    }
+    
+    /**
+     * @return string
+     */
+    public function <strong>getName()</strong> {
         return $this->name;
     }
     
-    public function setName($name) {
+    /**
+     * @param string $name
+     */
+    public function <strong>getName($name)</strong> {
         $this->name = (string) $name;
     }
     
-    public function getGreeting() {
+    /**
+     * @return Greeting
+     */
+    public function <strong>getGreeting()</strong> {
         return $this->greeting;
     }
     
-    public function setGreeting(Greeting $greeting) {
+    /**
+     * @param Greeting $greeting
+     */
+    public function <strong>addPerson(Greeting $greeting)</strong> {
         $this->greeting = $greeting;
     }
+
 }
             </pre>
         </div>
