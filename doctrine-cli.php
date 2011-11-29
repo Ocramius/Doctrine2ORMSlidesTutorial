@@ -6,7 +6,7 @@ use Symfony\Component\Console\Helper\HelperSet,
 require_once __DIR__ . '/bootstrap.php';
 
 $helperSet = new HelperSet(array(
-    new EntityManagerHelper($em),
-    new ConnectionHelper($em->getConnection())
+    'em' => new EntityManagerHelper($em),
+    'conn' => new ConnectionHelper($em->getConnection())
 ));
 ConsoleRunner::run($helperSet);
