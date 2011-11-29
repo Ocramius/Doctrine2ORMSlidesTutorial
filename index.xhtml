@@ -70,8 +70,13 @@
             <pre class="brush: php">
 mysql_connect('localhost', 'user', 'password');
 mysql_select_db('test');
+
+//simple example
 mysql_query('INSERT INTO greetings (content) VALUES ("' . mysql_real_escape_string($_POST['greeting']) . '")');
-mysql_query('INSERT INTO persons (greeting_id, name) VALUES (' . mysql_insert_id() . ', "' . mysql_real_escape_string($_POST['person']) . '")');
+
+//comments example
+mysql_query('INSERT INTO users (username) VALUES ("' . mysql_real_escape_string($_POST['username']) . '")');
+mysql_query('INSERT INTO comments (user_id, content) VALUES (' . mysql_insert_id() . ', "' . mysql_real_escape_string($_POST['content']) . '")');
             </pre>
         </div>
         <div class="slide">
@@ -98,10 +103,17 @@ mysql_query('INSERT INTO persons (greeting_id, name) VALUES (' . mysql_insert_id
             <pre class="brush: php">
 try {
     $dbh = new PDO('mysql:host=localhost;dbname=test', 'user', 'password');
+    
+    //simple example
     $sth = $dbh-&gt;prepare('INSERT INTO greetings (content) VALUES (:content);
     $sth-&gt;execute(array(':content' =&gt; $_POST['content']));
-    $sth = $dbh-&gt;prepare('INSERT INTO persons (greeting_id, name) VALUES (:greeting_id, :name)');
-    $sth-&gt;execute(array(':greeting_id' =&gt; $dbh-&gt;lastInsertId(), ':name' =&gt; $_POST['name']);
+    
+    //comments example
+    $sth = $dbh-&gt;prepare('INSERT INTO users (username) VALUES (:username)');
+    $sth-&gt;execute(array(':username' =&gt; $_POST['username']));
+    $sth = $dbh-&gt;prepare('INSERT INTO comments (user_id, content) VALUES (user_id, :content)');
+    $sth-&gt;execute(array(':user_id' =&gt; $dbh-&gt;lastInsertId(), ':content' =&gt; $_POST['content']);
+    
 } catch (PDOException $e) {
     echo $e-&gt;getMessage();
 }
@@ -135,6 +147,7 @@ try {
             <p>An Active Record implementation</p>
         </div>
         <div class="slide">
+            <h3>Greeting record definition</h3>
             <pre class="brush: php">
 class Greeting extends Doctrine_Record
 {
@@ -152,14 +165,43 @@ class Greeting extends Doctrine_Record
         );
     }
     
+}
+            </pre>
+        </div>
+        <div class="slide">
+            <pre class="brush: php">
+//simple example
+$greeting = new Greeting();
+$greeting-&gt;content = $_POST['content'];
+$greeting-&gt;save();
+            </pre>
+        </div>
+        <div class="slide">
+            <h3>User record definition</h3>
+            <pre class="brush: php">
+class User extends Doctrine_Record
+{
+    public function setTableDefinition()
+    {
+        $this-&gt;setTableName('users');
+        $this-&gt;hasColumn(
+            'username',
+            'string',
+            255,
+            array(
+                'type' =&gt; 'text',
+            )
+        );
+    }
+    
     public function setUp()
     {
         $this-&gt;hasMany(
-            'Person as Person',
+            'Comments as Comments',
             array(
-                'refClass' =&gt; 'Person',
-                'local' =&gt; 'greeting_id',
-                'foreign' =&gt; 'person_id'
+                'refClass' =&gt; 'Comment',
+                'local' =&gt; 'id',
+                'foreign' =&gt; 'user_id'
             )
         );
     }
@@ -167,14 +209,15 @@ class Greeting extends Doctrine_Record
             </pre>
         </div>
         <div class="slide">
+            <h3>Person record definition</h3>
             <pre class="brush: php">
-class Person extends Doctrine_Record
+class Comment extends Doctrine_Record
 {
     public function setTableDefinition()
     {
-        $this-&gt;setTableName('persons');
+        $this-&gt;setTableName('comments');
         $this-&gt;hasColumn(
-            'name',
+            'content',
             'string',
             255,
             array(
@@ -183,12 +226,11 @@ class Person extends Doctrine_Record
             )
         );
         $this-&gt;hasColumn(
-            'greeting_id',
+            'user_id',
             'string',
             255,
             array(
-                'type' =&gt; 'string',
-                'length' =&gt; '255'
+                'type' =&gt; 'integer',
             )
         );
     }
@@ -196,10 +238,10 @@ class Person extends Doctrine_Record
     public function setUp()
     {
         $this-&gt;hasOne(
-            'Greeting',
+            'User',
             array(
-                'refClass' =&gt; 'Greeting',
-                'local' =&gt; 'greeting_id',
+                'refClass' =&gt; 'User',
+                'local' =&gt; 'user_id',
                 'foreign' =&gt; 'id'
             )
         );
@@ -209,14 +251,14 @@ class Person extends Doctrine_Record
         </div>
         <div class="slide">
             <pre class="brush: php">
-$greeting = new Greeting();
-$greeting-&gt;content = $_POST['content'];
-$greeting-&gt;save();
-$person = new Person();
-$person-&gt;name = $_POST['name'];
-$person-&gt;Greeting = $greeting;
-$greeting-&gt;Person[] = $person;
-$greeting-&gt;save();
+//comments example
+$user = new User();
+$user-&gt;username = $_POST['username'];
+$comment = new Comment();
+$comment->content = $_POST['content'];
+$user-&gt;Comments[] = $comment;
+$comment-&gt;User = $user;
+$user-&gt;save();
             </pre>
         </div>
         <div class="slide">
@@ -224,6 +266,9 @@ $greeting-&gt;save();
             <ul>
                 <li class="pro">
                     Objects are written to DB by Doctrine: no more SQL!
+                </li>
+                <li class="pro">
+                    Associations are managed by Doctrine: no more foreign key mess!
                 </li>
                 <li class="pro">
                     Object-Oriented approach!
@@ -308,7 +353,6 @@ cd doctrine-demo
 mkdir library
 mkdir library/Entity
 touch library/Entity/Greeting.php
-touch library/Entity/Person.php
 mkdir library/EntityProxy
 chmod +w library/EntityProxy
 git clone https://github.com/doctrine/doctrine2.git --recursive library/doctrine-orm
@@ -322,8 +366,6 @@ touch bootstrap.php
             <pre class="brush: php">
 namespace Entity;
 
-use Entity\Person;
-
 class Greeting
 {
     /** @var int */
@@ -331,30 +373,6 @@ class Greeting
     
     /** @var string */
     private $content;
-    
-    /** @var Person[] */
-    private $persons;
-    
-}
-            </pre>
-        </div>
-        <div class="slide">
-            <pre class="brush: php">
-namespace Entity;
-
-use Entity\Greeting;
-
-class Person
-{
-    
-    /** @var int */
-    private $id;
-    
-    /** @var string */
-    private $name;
-    
-    /** @var Greeting */
-    private $greeting;
     
 }
             </pre>
@@ -366,10 +384,6 @@ class Person
             <pre class="brush: php">
 namespace Entity;
 
-use Doctrine\Common\Collections\Collection,
-    Doctrine\Common\Collections\ArrayCollection,
-    Entity\Person;
-
 class Greeting
 {
     
@@ -379,12 +393,7 @@ class Greeting
     /** @var string */
     private $content;
     
-    /** @var Collection */
-    private $persons;
-    
     public function <strong>__construct($content)</strong> {
-        <strong>//We use ArrayCollections instead of a simple arrays in Doctrine</strong>
-        $this->persons = new ArrayCollection();
         $this->setContent($content);
     }
     
@@ -409,82 +418,6 @@ class Greeting
         $this->content = (string) $content;
     }
     
-    /**
-     * @return Collection
-     */
-    public function <strong>getPersons()</strong> {
-        return $this->persons;
-    }
-    
-    /**
-     * @param Person $person
-     */
-    public function <strong>addPerson(Person $person)</strong> {
-        $this->persons->add($person);
-        $person->setGreeting($this);
-    }
-
-}
-            </pre>
-        </div>
-        <div class="slide">
-            <pre class="brush: php">
-namespace Entity;
-
-use Entity\Greeting;
-
-class Person
-{
-    
-    /** @var int */
-    private $id;
-    
-    /** @var string */
-    private $name;
-    
-    /** @var Greeting */
-    private $greeting;
-    
-    public function <strong>__construct(Greeting $greeting, $name)</strong> {
-        $this->setName($name);
-        $this->setGreeting($greeting);
-    }
-    
-    /**
-     * @return int
-     */
-    public function <strong>getId()</strong> {
-        return $this->id;
-    }
-    
-    /**
-     * @return string
-     */
-    public function <strong>getName()</strong> {
-        return $this->name;
-    }
-    
-    /**
-     * @param string $name
-     */
-    public function <strong>setName($name)</strong> {
-        $this->name = (string) $name;
-    }
-    
-    /**
-     * @return Greeting
-     */
-    public function <strong>getGreeting()</strong> {
-        return $this->greeting;
-    }
-    
-    /**
-     * @param Greeting $greeting
-     */
-    public function <strong>addPerson(Greeting $greeting)</strong> {
-        $this->greeting = $greeting;
-    }
-
 }
             </pre>
         </div>
@@ -495,10 +428,7 @@ class Person
             <pre class="brush: php">
 namespace Entity;
 
-use Doctrine\Common\Collections\Collection,
-    Doctrine\Common\Collections\ArrayCollection,
-    Entity\Person,
-    Doctrine\ORM\Mapping as ORM;
+use <strong>Doctrine\ORM\Mapping as ORM</strong>;
 
 /**
  * <strong>@ORM\Entity</strong>
@@ -520,14 +450,7 @@ class Greeting
      */
     private $content;
     
-    /**
-     * <strong>@ORM\OneToMany(targetEntity="Entity\Person", mappedBy="greeting")</strong>
-     * @var Collection
-     */
-    private $persons;
-    
     public function __construct($content) {
-        $this->persons = new ArrayCollection();
         $this->setContent($content);
     }
     
@@ -552,97 +475,6 @@ class Greeting
         $this->content = (string) $content;
     }
     
-    /**
-     * @return Collection
-     */
-    public function getPersons() {
-        return $this->persons;
-    }
-    
-    /**
-     * @param Person $person
-     */
-    public function addPerson(Person $person) {
-        $this->persons->add($person);
-        $person->setGreeting($this);
-    }
-
-}
-            </pre>
-        </div>
-        <div class="slide">
-            <pre class="brush: php">
-namespace Entity;
-
-use Entity\Greeting,
-    Doctrine\ORM\Mapping as ORM;
-
-/**
- * <strong>@ORM\Entity</strong>
- */
-class Person
-{
-    
-    /**
-     * <strong>@ORM\Id()</strong>
-     * <strong>@ORM\Column(type="integer")</strong>
-     * <strong>@ORM\GeneratedValue(strategy="AUTO")</strong>
-     * @var int
-     */
-    private $id;
-    
-    /**
-     * <strong>@ORM\Column(type="string", length=255)</strong>
-     * @var string
-     */
-    private $name;
-    
-    /**
-     * <strong>@ORM\ManyToOne(targetEntity="Entity\Greeting", inversedBy="persons")</strong>
-     * @var Greeting
-     */
-    private $greeting;
-    
-    public function __construct(Greeting $greeting, $name) {
-        $this->setName($name);
-        $this->setGreeting($greeting);
-    }
-    
-    /**
-     * @return int
-     */
-    public function getId() {
-        return $this->id;
-    }
-    
-    /**
-     * @return string
-     */
-    public function getName() {
-        return $this->name;
-    }
-    
-    /**
-     * @param string $name
-     */
-    public function setName($name) {
-        $this->name = (string) $name;
-    }
-    
-    /**
-     * @return Greeting
-     */
-    public function getGreeting() {
-        return $this->greeting;
-    }
-    
-    /**
-     * @param Greeting $greeting
-     */
-    public function addPerson(Greeting $greeting) {
-        $this->greeting = $greeting;
-    }
-
 }
             </pre>
         </div>
