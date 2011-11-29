@@ -4,14 +4,16 @@ use Doctrine\ORM\Tools\Setup,
     Doctrine\ORM\EntityManager,
     Doctrine\ORM\Configuration,
     Doctrine\Common\Cache\ArrayCache as Cache,
-    Doctrine\Common\Annotations\AnnotationRegistry;
-
-ini_set('display_errors', 'On');
-ini_set('error_reporting', E_ERROR | E_RECOVERABLE_ERROR);
+    Doctrine\Common\Annotations\AnnotationRegistry,
+    Doctrine\Common\ClassLoader;
 
 //autoloading
-require_once 'library/doctrine-orm/lib/Doctrine/ORM/Tools/Setup.php';
+require_once __DIR__ . '/library/doctrine-orm/lib/Doctrine/ORM/Tools/Setup.php';
 Setup::registerAutoloadGit(__DIR__ . '/library/doctrine-orm');
+$loader = new ClassLoader('Entity', __DIR__ . '/library');
+$loader->register();
+$loader = new ClassLoader('EntityProxy', __DIR__ . '/library');
+$loader->register();
 
 //configuration
 $config = new Configuration();
