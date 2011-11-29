@@ -1,27 +1,31 @@
 <?php
 namespace Entity;
 
-use Entity\Greeting;
+use Entity\Greeting,
+    Doctrine\ORM\Mapping as ORM;
 
+/**
+ * @ORM\Entity 
+ */
 class Person
 {
     
     /**
-     * @Id()
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="auto")
+     * @ORM\Id()
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      * @var int
      */
     private $id;
     
     /**
-     * @Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255)
      * @var string
      */
     private $name;
     
     /**
-     * @ManyToOne(targetEntity="Entity\Greeting", inversedBy="persons")
+     * @ORM\ManyToOne(targetEntity="Entity\Greeting", inversedBy="persons")
      * @var Greeting
      */
     private $greeting;

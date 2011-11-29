@@ -3,27 +3,31 @@ namespace Entity;
 
 use Doctrine\Common\Collections\Collection,
     Doctrine\Common\Collections\ArrayCollection,
-    Entity\Person;
+    Entity\Person,
+    Doctrine\ORM\Mapping as ORM;
 
+/**
+ * @ORM\Entity 
+ */
 class Greeting
 {
     
     /**
-     * @Id()
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="auto")
+     * @ORM\Id()
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      * @var int
      */
     private $id;
     
     /**
-     * @Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255)
      * @var string
      */
     private $content;
     
     /**
-     * @OneToMany(targetEntity="Entity\Person", mappedBy="greeting")
+     * @ORM\OneToMany(targetEntity="Entity\Person", mappedBy="greeting")
      * @var Collection
      */
     private $persons;
