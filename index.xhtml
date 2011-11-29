@@ -39,6 +39,12 @@
                 font-size: 60%;
                 line-height: 0.8;
             }
+            .pro {
+                color: #008200;
+            }
+            .cons {
+                color: #ff0000;
+            }
         </style>
     </head>
     <body>
@@ -50,7 +56,7 @@
             </p>
         </div>
         <div class="slide">
-            <h2>Some history of persistence in PHP:</h2>
+            <h2>Some history of RDBMS persistence in PHP:</h2>
             <ol>
                 <li>mysql_query, mysql_fetch_array, mysql_*</li>
                 <li>mysqli, PDO</li>
@@ -59,6 +65,8 @@
         </div>
         <div class="slide">
             <h2>mysql_query</h2>
+        </div>
+        <div class="slide">
             <pre class="brush: php">
 mysql_connect('localhost', 'user', 'password');
 mysql_select_db('test');
@@ -67,22 +75,26 @@ mysql_query('INSERT INTO persons (greeting_id, name) VALUES (' . mysql_insert_id
             </pre>
         </div>
         <div class="slide">
-            <h2>mysql_query</h2>
-            <p>
-                We had to write our queries and our security (mysql_real_escape_string()) by ourselves.
-            </p>
-            <p>
-                Also, we had to keep track of ids of the inserted fields by ourselves.
-            </p>
-            <p>
-                We had to rewrite every function name (and probably also functionality) when switching database vendor.
-            </p>
-            <p>
-                Not really OO friendly, heh?
-            </p>
+            <h3>mysql_query</h3>
+            <ul>
+                <li class="cons">
+                    We had to write our queries and our security (mysql_real_escape_string()) by ourselves.
+                </li>
+                <li class="cons">
+                    Also, we had to keep track of identifiers of the inserted fields by ourselves.
+                </li>
+                <li class="cons">
+                    We had to rewrite every function name (and probably also functionality) when switching database vendor.
+                </li>
+                <li class="cons">
+                    Not really OO friendly, heh?
+                </li>
+            </ul>
         </div>
         <div class="slide">
             <h2>PDO</h2>
+        </div>
+        <div class="slide">
             <pre class="brush: php">
 try {
     $dbh = new PDO('mysql:host=localhost;dbname=test', 'user', 'password');
@@ -96,26 +108,33 @@ try {
             </pre>
         </div>
         <div class="slide">
-            <h2>PDO</h2>
-            <p>
-                We now can connect to different databases. MySQL is no more the only option!
-            </p>
-            <p>
-                Security is given by named parameters, escaped for us by PDO.
-            </p>
-            <p>
-                Exceptions are used, we can now catch them!
-            </p>
-            <p>
-                OOP friendly, we can extend PDO!
-            </p>
-            <p>
-                Queries are still performed in the SQL dialect of the vendor, which could make our code not 100% portable.
-            </p>
+            <h3>PDO</h3>
+            <ul>
+                <li class="pro">
+                    We now can connect to different databases. MySQL is no more the only option!
+                </li>
+                <li class="pro">
+                    Security is given by named parameters, escaped for us by PDO!
+                </li>
+                <li class="pro">
+                    Prepared statements make our queries easier to reuse!
+                </li>
+                <li class="pro">
+                    Exceptions are used, we can now catch them!
+                </li>
+                <li class="cons">
+                    Queries are still performed in the SQL dialect of the vendor, which could make our code not 100% portable.
+                </li>
+                <li class="cons">
+                    Still have to keep track of identifiers of the inserted fields by ourselves.
+                </li>
+            </ul>
         </div>
         <div class="slide">
             <h2>Doctrine 1.2</h2>
-            <p>An Active Record implementation:</p>
+            <p>An Active Record implementation</p>
+        </div>
+        <div class="slide">
             <pre class="brush: php">
 class Greeting extends Doctrine_Record
 {
@@ -148,7 +167,6 @@ class Greeting extends Doctrine_Record
             </pre>
         </div>
         <div class="slide">
-            <h2>Doctrine 1.2</h2>
             <pre class="brush: php">
 class Person extends Doctrine_Record
 {
@@ -190,7 +208,6 @@ class Person extends Doctrine_Record
             </pre>
         </div>
         <div class="slide">
-            <h2>Doctrine 1.2</h2>
             <pre class="brush: php">
 $greeting = new Greeting();
 $greeting-&gt;content = $_POST['content'];
@@ -203,32 +220,37 @@ $greeting-&gt;save();
             </pre>
         </div>
         <div class="slide">
-            <h2>Doctrine 1.2</h2>
-            <p>
-                Objects are written to DB by Doctrine (no more SQL!)
-            </p>
-            <p>
-                Object-Oriented
-            </p>
-            <p>
-                Database is abstracted by a powerful DBAL layer.
-            </p>
-            <p>
-                Table definition is set in our domain logic.
-            </p>
-            <p>
-                A lot of PHP "magic" is happening (__set, __get, etc.).
-            </p>
-            <p>
-                Our objects must extend Doctrine_Record to be used with Doctrine
-            </p>
+            <h3>Doctrine 1.2</h3>
+            <ul>
+                <li class="pro">
+                    Objects are written to DB by Doctrine: no more SQL!
+                </li>
+                <li class="pro">
+                    Object-Oriented approach!
+                </li>
+                <li class="pro">
+                    Database is abstracted by a powerful DBAL layer: no more SQL portability troubles!
+                </li>
+                <li class="pro">
+                    Database can be generated by our models!
+                </li>
+                <li class="cons">
+                    Table definition is set in our domain logic.
+                </li>
+                <li class="cons">
+                    A lot of PHP "magic" is happening (__set, __get, etc.).
+                </li>
+                <li class="cons">
+                    Our objects must extend Doctrine_Record to be used with Doctrine
+                </li>
+            </ul>
         </div>
         <div class="slide">
             <h2>What is Doctrine 2?</h2>
             <p>
                 Doctrine 2 is a Data Mapper implementation:
             </p>
-            <p>
+            <p style="margin: 10px;">
                 <img src="image/databaseMapperSketch.gif" alt="Data Mapper" width="60%"/>
             </p>
             <p>
@@ -238,10 +260,12 @@ $greeting-&gt;save();
                 It provides around 3X better performance than Doctrine 1.2.
             </p>
             <p>
-                Good news: your objects don't need to extend anything.
-                <br/>
-                You are free to save anything you want to your database.
-                <br/>
+                Your objects won't need to extend anything.
+            </p>
+            <p>
+                You are free to save anything you want to your database, just map it!
+            </p>
+            <p>
                 You can even map existing classes to database tables!
             </p>
         </div>
@@ -273,10 +297,10 @@ mkdir doctrine-demo
 cd doctrine-demo
 mkdir library
 mkdir library/Entity
-mkdir library/EntityProxy
-chmod +w library/EntityProxy
 touch library/Entity/Greeting.php
 touch library/Entity/Person.php
+mkdir library/EntityProxy
+chmod +w library/EntityProxy
 git clone https://github.com/doctrine/doctrine2.git --recursive library/doctrine-orm
 touch bootstrap.php
             </pre>
@@ -285,7 +309,6 @@ touch bootstrap.php
             <h2>Create entities...</h2>
         </div>
         <div class="slide">
-            <h3>Entity\Greeting</h3>
             <pre class="brush: php">
 namespace Entity;
 
@@ -306,7 +329,6 @@ class Greeting
             </pre>
         </div>
         <div class="slide">
-            <h3>Entity\Person</h3>
             <pre class="brush: php">
 namespace Entity;
 
@@ -331,7 +353,6 @@ class Person
             <h2>...add getters, setters, constructors, other methods...</h2>
         </div>
         <div class="slide">
-            <h3>Constructor and setters/getters of Entity\Greeting</h3>
             <pre class="brush: php">
 namespace Entity;
 
@@ -397,7 +418,6 @@ class Greeting
             </pre>
         </div>
         <div class="slide">
-            <h3>Constructor and setters/getters of Entity\Person</h3>
             <pre class="brush: php">
 namespace Entity;
 
@@ -459,7 +479,9 @@ class Person
             </pre>
         </div>
         <div class="slide">
-            <h3>Mapping (@Annotations) Entity\Greeting</h3>
+            <h2>...add mappings (@Annotations) to entities...</h2>
+        </div>
+        <div class="slide">
             <pre class="brush: php">
 namespace Entity;
 
@@ -535,7 +557,6 @@ class Greeting
             </pre>
         </div>
         <div class="slide">
-            <h3>Mapping (@Annotations) Entity\Person</h3>
             <pre class="brush: php">
 namespace Entity;
 
@@ -608,7 +629,7 @@ class Person
             </pre>
         </div>
         <div class="slide">
-            <h2>Getting started: getting the EntityManager</h2>
+            <h2>Creating an EntityManager</h2>
         </div>
         <div class="slide">
             <h3>Autoloading:</h3>
