@@ -457,7 +457,7 @@ class Person
     /**
      * @param string $name
      */
-    public function <strong>getName($name)</strong> {
+    public function <strong>setName($name)</strong> {
         $this->name = (string) $name;
     }
     
@@ -607,7 +607,7 @@ class Person
     /**
      * @param string $name
      */
-    public function getName($name) {
+    public function setName($name) {
         $this->name = (string) $name;
     }
     
@@ -659,7 +659,7 @@ $config-&gt;setAutoGenerateProxyClasses(true);
 
 //mapping (example uses annotations, could be any of XML/YAML or plain PHP)
 $driverImpl = $config-&gt;newDefaultAnnotationDriver(__DIR__ . '/library/Entity');
-$config-&gt;setMetadataDriverImpl($cache);
+$config-&gt;setMetadataDriverImpl($driverImpl);
 $config-&gt;setMetadataCacheImpl($cache);
             </pre>
         </div>
@@ -688,7 +688,7 @@ use Doctrine\ORM\Tools\Setup,
 
 //autoloading
 require_once 'library/doctrine-orm/lib/Doctrine/ORM/Tools/Setup.php';
-Setup::registerAutoloadGit(__DIR__ . 'library/doctrine-orm');
+Setup::registerAutoloadGit(__DIR__ . '/library/doctrine-orm');
 
 //configuration
 $config = new Configuration();
@@ -700,7 +700,7 @@ $config-&gt;setAutoGenerateProxyClasses(true);
 
 //mapping (example uses annotations, could be any of XML/YAML or plain PHP)
 $driverImpl = $config-&gt;newDefaultAnnotationDriver(__DIR__ . '/library/Entity');
-$config-&gt;setMetadataDriverImpl($cache);
+$config-&gt;setMetadataDriverImpl($driverImpl);
 $config-&gt;setMetadataCacheImpl($cache);
 
 //getting the EntityManager
@@ -715,6 +715,30 @@ $em = EntityManager::create(
         </div>
         <div class="slide">
             <h2>Generating the schema</h2>
+            <h3>(Configuring doctrine-cli.php)</h3>
+        </div>
+        <div class="slide">
+            <h3>CLI runner</h3>
+            <pre class="brush: php">
+&lt;?php
+//doctrine-cli.php
+use Symfony\Component\Console\Helper\HelperSet,
+    Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper,
+    Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper,
+    \Doctrine\ORM\Tools\Console\ConsoleRunner;
+require_once __DIR__ . '/bootstrap.php';
+
+$helperSet = new HelperSet(array(
+    'em' => new EntityManagerHelper($em),
+    'conn' => new ConnectionHelper($em->getConnection())
+));
+ConsoleRunner::run($helperSet);
+            </pre>
+        </div>
+        <div class="slide">
+            <h3>Generating the schema</h3>
+            <pre class="brush: bash">
+            </pre>
         </div>
     </body>
 </html>
