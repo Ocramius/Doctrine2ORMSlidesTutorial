@@ -497,27 +497,31 @@ namespace Entity;
 
 use Doctrine\Common\Collections\Collection,
     Doctrine\Common\Collections\ArrayCollection,
-    Entity\Person;
+    Entity\Person,
+    Doctrine\ORM\Mapping as ORM;
 
+/**
+ * <strong>@ORM\Entity</strong>
+ */
 class Greeting
 {
     
     /**
-     * <strong>@Id()</strong>
-     * <strong>@Column(type="integer")</strong>
-     * <strong>@GeneratedValue(strategy="AUTO")</strong>
+     * <strong>@ORM\Id()</strong>
+     * <strong>@ORM\Column(type="integer")</strong>
+     * <strong>@ORM\GeneratedValue(strategy="AUTO")</strong>
      * @var int
      */
     private $id;
     
     /**
-     * <strong>@Column(type="string", length=255)</strong>
+     * <strong>@ORM\Column(type="string", length=255)</strong>
      * @var string
      */
     private $content;
     
     /**
-     * <strong>@OneToMany(targetEntity="Entity\Person", mappedBy="greeting")</strong>
+     * <strong>@ORM\OneToMany(targetEntity="Entity\Person", mappedBy="greeting")</strong>
      * @var Collection
      */
     private $persons;
@@ -570,27 +574,31 @@ class Greeting
             <pre class="brush: php">
 namespace Entity;
 
-use Entity\Greeting;
+use Entity\Greeting,
+    Doctrine\ORM\Mapping as ORM;
 
+/**
+ * <strong>@ORM\Entity</strong>
+ */
 class Person
 {
     
     /**
-     * <strong>@Id()</strong>
-     * <strong>@Column(type="integer")</strong>
-     * <strong>@GeneratedValue(strategy="AUTO")</strong>
+     * <strong>@ORM\Id()</strong>
+     * <strong>@ORM\Column(type="integer")</strong>
+     * <strong>@ORM\GeneratedValue(strategy="AUTO")</strong>
      * @var int
      */
     private $id;
     
     /**
-     * <strong>@Column(type="string", length=255)</strong>
+     * <strong>@ORM\Column(type="string", length=255)</strong>
      * @var string
      */
     private $name;
     
     /**
-     * <strong>@ManyToOne(targetEntity="Entity\Greeting", inversedBy="persons")</strong>
+     * <strong>@ORM\ManyToOne(targetEntity="Entity\Greeting", inversedBy="persons")</strong>
      * @var Greeting
      */
     private $greeting;
