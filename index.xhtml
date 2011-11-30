@@ -302,10 +302,7 @@ $user-&gt;save();
                     <img src="image/databaseMapperSketch.gif" alt="Data Mapper" width="60%" style="margin: 10px;"/>
                 </li>
                 <li class="pro">
-                    Doctrine 2 is a Data Mapper implementation:
-                </li>
-                <li class="pro">
-                    Follows the well known Java Persistence API (JPA, aka JSR 317)
+                    Used the well known Java Persistence API (JPA, aka JSR 317) as initial blueprint
                 </li>
                 <li class="pro">
                     It separates persistence and domain logic. You are now able to port your logic to SQL, NoSQL, XML mappers, etc.
@@ -857,6 +854,278 @@ if(!empty($greetings)) {
         <div class="slide">
             <h2>Using associations</h2>
             <h3>We will map some entities to check how associations work...</h3>
+        </div>
+        <div class="slide">
+            <pre class="brush: php;">
+/** @ORM\Entity */
+class User
+{
+    
+    /** @ORM\Id() @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO") @var int */
+    private $id;
+    
+    /** @ORM\Column(type="string", length=255) @var string */
+    private $login;
+    
+    /**
+     * <strong>@ORM\OneToMany(targetEntity="Entity\Comment", mappedBy="user")</strong>
+     * <strong>@var Collection</strong>
+     */
+    private $comments;
+    
+    public function __construct($login) {
+        <strong>//Initializing collection. Doctrine recognizes Collections, not arrays!</strong>
+        <strong>$this->comments = new ArrayCollection();</strong>
+        $this->setLogin($login);
+    }
+    
+    //Getters and setters
+    
+    /** @return Collection */
+    public function getComments() {
+        return $this->comments;
+    }
+    
+    /** @param Comment $comment */
+    public function addComment(Comment $comment) {
+        <strong>$this->comments->add($comment);</strong>
+        $comment->setUser($this);
+    }
+
+}
+            </pre>
+        </div>
+        <div class="slide">
+            <pre class="brush: php;">
+/** @ORM\Entity */
+class Comment
+{
+    
+    /** @ORM\Id()  @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO") @var int */
+    private $id;
+    
+    /** @ORM\Column(type="string", length=255) @var string */
+    private $content;
+    
+    /**
+     * <strong>@ORM\ManyToOne(targetEntity="Entity\User", inversedBy="comments")</strong>
+     * <strong>@var User|null</strong>
+     */
+    private $user;
+    
+    public function __construct($content) {
+        $this->setContent($content);
+    }
+    
+    //Setters, getters
+    
+    /** <strong>@return User|null</strong>
+     */
+    public function getUser() {
+        return $this->user;
+    }
+    
+    /** <strong>@param User $user</strong> */
+    public function setUser(User $user) {
+        if($user === null || $user instanceof User) {
+            $this->user = $user;
+        } else {
+            throw new InvalidArgumentException('$user must be instance of Entity\User or null!');
+        }
+    }
+
+}
+            </pre>
+        </div>
+        <div class="slide">
+            <h2>Now to the examples</h2>
+        </div>
+        <div class="slide">
+            <h3>Creating a User with a related Comment</h3>
+            <pre class="brush: php">
+//examples/7.php
+use Entity\User,
+    Entity\Comment;
+
+require_once __DIR__ . '/../bootstrap.php';
+
+//Creating our user
+$user = new User('Marco Pivetta');
+$em->persist($user);
+
+$comment = new Comment('This is a sample post!');
+$em->persist($comment);
+
+$user->addComment($comment);
+
+//Flushing all changes to database
+$em->flush();
+
+echo 'OK!';
+            </pre>
+        </div>
+        <div class="slide">
+            <h3>Fetching the User and it's related Comment</h3>
+            <pre class="brush: php">
+//examples/8.php
+require_once __DIR__ . '/../bootstrap.php';
+
+//Finding previously persisted user
+$user = $em->find('Entity\User', 1);
+
+if($user) {
+    echo 'Found an Entity\User: ' . PHP_EOL
+        . $user->getId() . ' => ' . $user->getLogin() . '(' . get_class($user) . ')' . PHP_EOL
+        . 'and ' . $user->getComments()->count() . ' Entity\Comment attached to it: ' . PHP_EOL;
+    foreach($user->getComments() as $comment) {
+        echo '  ' . $comment->getId() . ' => ' . $comment->getContent()
+            . ' (' . get_class($comment) . ')' . PHP_EOL;
+    }
+} else {
+    echo 'Could not find Entity\User with id=1';
+}
+            </pre>
+        </div>
+        <div class="slide">
+            <h3>Attaching a Comment to an existing User</h3>
+            <pre class="brush: php">
+//examples/9.php
+use Entity\Comment;
+
+require_once __DIR__ . '/../bootstrap.php';
+
+//Finding previously persisted user
+$user = $em->find('Entity\User', 1);
+
+if($user) {
+    echo 'Found an Entity\User: ' . PHP_EOL
+        . $user->getId() . ' => ' . $user->getLogin() . '(' . get_class($user) . ')' . PHP_EOL
+        . 'and ' . $user->getComments()->count() . ' Entity\Comment attached to it: ' . PHP_EOL;
+    echo 'Adding a Comment to the user';
+    $comment = new Comment('Comment generated at ' . time());
+    $em->persist($comment);
+    $user->addComment($comment);
+    $em->flush();
+    echo 'Comment has been attached to the user, try 8.php!';
+} else {
+    echo 'Could not find Entity\User with id=1';
+}
+            </pre>
+        </div>
+        <div class="slide">
+            <h3>Removing a Comment attached to a User</h3>
+            <pre class="brush: php">
+//examples/10.php
+require_once __DIR__ . '/../bootstrap.php';
+
+$user = $em->find('Entity\User', 1);
+
+if($user) {
+    echo 'Found an Entity\User: ' . PHP_EOL
+        . $user->getId() . ' => ' . $user->getLogin() . '(' . get_class($user) . ')' . PHP_EOL
+        . 'and ' . $user->getComments()->count() . ' Entity\Comment attached to it: ' . PHP_EOL;
+    if($comment = $user->getComments()->first()) {
+        echo 'Removing the first attached comment!' . PHP_EOL;
+        echo 'Removing comment with id=' . $comment->getId() . PHP_EOL;
+        $em->remove($comment);
+        $em->flush();
+    } else {
+        echo 'Could not find any comments to remove...' . PHP_EOL;
+    }
+} else {
+    echo 'Could not find Entity\User with id=1';
+}
+            </pre>
+        </div>
+        <div class="slide">
+            <h3>Joins in DQL: finding all users with a comment with id > 5</h3>
+            <pre class="brush: php">
+//examples/11.php
+require_once __DIR__ . '/../bootstrap.php';
+
+echo 'Searching all users with a comment with id > 5: ' . PHP_EOL;
+$users = $em
+    ->createQuery('SELECT u FROM Entity\User u JOIN u.comments c WHERE c.id > :id')
+    ->setParameter('id', 5)
+    ->getResult();
+echo 'Found ' . count($users) . ':' . PHP_EOL;
+foreach($users as $user) {
+    echo '  ' . $user->getId() . ' => ' . $user->getLogin() . ' (' . get_class($user) . ')' . PHP_EOL;
+}
+            </pre>
+        </div>
+        <div class="slide">
+            <h2>Other cool features of Doctrine 2</h2>
+            <p>
+                This tutorial should be extended with following examples and features:
+            </p>
+            <ul>
+                <li>
+                    inheritance types
+                </li>
+                <li>
+                    mapping types - custom mapping types
+                </li>
+                <li>
+                    transactions
+                </li>
+                <li>
+                    caches, performance, memory leaks
+                </li>
+                <li>
+                    other mapping drivers
+                </li>
+                <li>
+                    proxies
+                </li>
+                <li>
+                    events
+                </li>
+                <li>
+                    cascade operations
+                </li>
+                <li>
+                    optimistic locking - pessimistic locking
+                </li>
+                <li>
+                    NativeSQL
+                </li>
+                <li>
+                    Query Builder
+                </li>
+                <li>
+                    Custom repositories
+                </li>
+            </ul>
+        </div>
+        <div class="slide">
+            <h2>Other cool features of Doctrine 2</h2>
+            <p>
+                This tutorial should be extended with following examples and features:
+            </p>
+            <ul>
+                <li>
+                    other annotations:
+                    <ul>
+                        <li>@Table</li>
+                        <li>@Entity</li>
+                        <li>@GeneratedValue</li>
+                        <li>@JoinTable</li>
+                        <li>@JoinColumn</li>
+                        <li>@Index</li>
+                        <li>@UniqueIndex</li>
+                        <li>@OrderBy</li>
+                        <li>@Version</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="slide">
+            <h2>Warnings</h2>
+            __clone
+            __wakeup
+            dumping
+            entity state
         </div>
     </body>
 </html>
