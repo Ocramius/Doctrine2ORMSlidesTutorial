@@ -407,7 +407,7 @@ class Greeting
             <h2>...add getters, setters, constructors, other methods...</h2>
         </div>
         <div class="slide">
-            <pre class="brush: php">
+            <pre class="brush: php, highlight: [12, 19, 26, 33];">
 namespace Entity;
 
 class Greeting
@@ -419,28 +419,28 @@ class Greeting
     /** @var string */
     private $content;
     
-    public function <strong>__construct($content)</strong> {
+    public function __construct($content) {
         $this->setContent($content);
     }
     
     /**
      * @return int
      */
-    public function <strong>getId()</strong> {
+    public function getId() {
         return $this->id;
     }
     
     /**
      * @return string
      */
-    public function <strong>getContent()</strong> {
+    public function getContent() {
         return $this->content;
     }
     
     /**
      * @param string $content
      */
-    public function <strong>setContent($content)</strong> {
+    public function setContent($content) {
         $this->content = (string) $content;
     }
     
@@ -451,27 +451,27 @@ class Greeting
             <h2>...add mappings (@Annotations) to entities...</h2>
         </div>
         <div class="slide">
-            <pre class="brush: php">
+            <pre class="brush: php, highlight: [3, 6, 12, 13, 14, 20];">
 namespace Entity;
 
-use <strong>Doctrine\ORM\Mapping as ORM</strong>;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
- * <strong>@ORM\Entity</strong>
+ * @ORM\Entity
  */
 class Greeting
 {
     
     /**
-     * <strong>@ORM\Id()</strong>
-     * <strong>@ORM\Column(type="integer")</strong>
-     * <strong>@ORM\GeneratedValue(strategy="AUTO")</strong>
+     * @ORM\Id()
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      * @var int
      */
     private $id;
     
     /**
-     * <strong>@ORM\Column(type="string", length=255)</strong>
+     * @ORM\Column(type="string", length=255)
      * @var string
      */
     private $content;
@@ -633,7 +633,7 @@ ConsoleRunner::run($helperSet);
         </div>
         <div class="slide">
             <h3>Generating the schema</h3>
-            <pre class="brush: bash">
+            <pre class="brush: bash, highlight: [5];">
 $ php doctrine-cli.php orm:schema-tool:create
 ATTENTION: This operation should not be executed in a production environment.
 
@@ -650,8 +650,7 @@ Database schema created successfully!
         </div>
         <div class="slide">
             <h3>Saving a "Entity\Greeting" object</h3>
-            <pre class="brush: php">
-&lt;?php
+            <pre class="brush: php, highlight: [11, 14];">
 //examples/1.php
 
 use Entity\Greeting;
@@ -672,8 +671,7 @@ echo 'OK!';
         </div>
         <div class="slide">
             <h3>Retrieving an "Entity\Greeting" object</h3>
-            <pre class="brush: php">
-&lt;?php
+            <pre class="brush: php, highlight: [5, 9, 10];">
 //examples/2.php
 require_once __DIR__ . '/../bootstrap.php';
 
@@ -691,8 +689,7 @@ if($greeting) {
         </div>
         <div class="slide">
             <h3>Updating an "Entity\Greeting" object</h3>
-            <pre class="brush: php">
-&lt;?php
+            <pre class="brush: php, highlight: [5, 11, 13];">
 //examples/3.php
 require_once __DIR__ . '/../bootstrap.php';
 
@@ -714,8 +711,7 @@ if($greeting) {
         </div>
         <div class="slide">
             <h3>Finding "Entity\Greeting" objects</h3>
-            <pre class="brush: php">
-&lt;?php
+            <pre class="brush: php, highlight: [5, 8, 11, 15, 20];">
 //examples/4.php
 require_once __DIR__ . '/../bootstrap.php';
 
@@ -742,8 +738,7 @@ foreach($testGreetings as $testGreeting) {
         </div>
         <div class="slide">
             <h3>Retrieving "Entity\Greeting" objects via DQL</h3>
-            <pre class="brush: php">
-&lt;?php
+            <pre class="brush: php, highlight: [6, 11];">
 //examples/5.php
 require_once __DIR__ . '/../bootstrap.php';
 
@@ -761,8 +756,7 @@ foreach($greetings as $greeting) {
         </div>
         <div class="slide">
             <h3>Deleting "Entity\Greeting" objects</h3>
-            <pre class="brush: php">
-&lt;?php
+            <pre class="brush: php, highlight: [6, 7, 14, 16];">
 //examples/6.php
 require_once __DIR__ . '/../bootstrap.php';
 
@@ -878,7 +872,7 @@ if(!empty($greetings)) {
             <h3>We will map some entities to check how associations work...</h3>
         </div>
         <div class="slide">
-            <pre class="brush: php;">
+            <pre class="brush: php, highlight: [12, 13, 18, 19, 25, 32];">
 /** @ORM\Entity */
 class User
 {
@@ -890,14 +884,14 @@ class User
     private $login;
     
     /**
-     * <strong>@ORM\OneToMany(targetEntity="Entity\Comment", mappedBy="user")</strong>
-     * <strong>@var Collection</strong>
+     * @ORM\OneToMany(targetEntity="Entity\Comment", mappedBy="user")
+     * @var Collection
      */
     private $comments;
     
     public function __construct($login) {
-        <strong>//Initializing collection. Doctrine recognizes Collections, not arrays!</strong>
-        <strong>$this->comments = new ArrayCollection();</strong>
+        //Initializing collection. Doctrine recognizes Collections, not arrays!
+        $this->comments = new ArrayCollection();
         $this->setLogin($login);
     }
     
@@ -910,7 +904,7 @@ class User
     
     /** @param Comment $comment */
     public function addComment(Comment $comment) {
-        <strong>$this->comments->add($comment);</strong>
+        $this->comments->add($comment);
         $comment->setUser($this);
     }
 
@@ -918,7 +912,7 @@ class User
             </pre>
         </div>
         <div class="slide">
-            <pre class="brush: php;">
+            <pre class="brush: php, highlight: [12, 13, 23, 28];">
 /** @ORM\Entity */
 class Comment
 {
@@ -930,8 +924,8 @@ class Comment
     private $content;
     
     /**
-     * <strong>@ORM\ManyToOne(targetEntity="Entity\User", inversedBy="comments")</strong>
-     * <strong>@var User|null</strong>
+     * @ORM\ManyToOne(targetEntity="Entity\User", inversedBy="comments")
+     * @var User|null
      */
     private $user;
     
@@ -941,13 +935,12 @@ class Comment
     
     //Setters, getters
     
-    /** <strong>@return User|null</strong>
-     */
+    /** @return User|null */
     public function getUser() {
         return $this->user;
     }
     
-    /** <strong>@param User $user</strong> */
+    /** @param User $user */
     public function setUser(User $user) {
         if($user === null || $user instanceof User) {
             $this->user = $user;
@@ -964,7 +957,7 @@ class Comment
         </div>
         <div class="slide">
             <h3>Creating a User with a related Comment</h3>
-            <pre class="brush: php">
+            <pre class="brush: php, highlight: [8, 9, 11, 12, 14, 17];">
 //examples/7.php
 use Entity\User,
     Entity\Comment;
@@ -988,7 +981,7 @@ echo 'OK!';
         </div>
         <div class="slide">
             <h3>Fetching the User and it's related Comment</h3>
-            <pre class="brush: php">
+            <pre class="brush: php, highlight: [5, 11, 12, 13];">
 //examples/8.php
 require_once __DIR__ . '/../bootstrap.php';
 
@@ -1010,7 +1003,7 @@ if($user) {
         </div>
         <div class="slide">
             <h3>Attaching a Comment to an existing User</h3>
-            <pre class="brush: php">
+            <pre class="brush: php, highlight: [7, 14, 15, 16, 17];">
 //examples/9.php
 use Entity\Comment;
 
@@ -1036,7 +1029,7 @@ if($user) {
         </div>
         <div class="slide">
             <h3>Removing a Comment attached to a User</h3>
-            <pre class="brush: php">
+            <pre class="brush: php, highlight: [4, 10, 13, 14];">
 //examples/10.php
 require_once __DIR__ . '/../bootstrap.php';
 
@@ -1061,7 +1054,7 @@ if($user) {
         </div>
         <div class="slide">
             <h3>Joins in DQL: finding all users with a comment with id > 5</h3>
-            <pre class="brush: php">
+            <pre class="brush: php, highlight: [6, 7, 10];">
 //examples/11.php
 require_once __DIR__ . '/../bootstrap.php';
 
