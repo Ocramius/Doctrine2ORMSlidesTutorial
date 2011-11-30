@@ -1,0 +1,23 @@
+/* 
+    Document   : slippy-styled
+    Created on : 30.11.2011, 13:39:47
+    Author     : Marco Pivetta
+    Description:
+        Overrides to slippy and highlighter default stylesheet
+*/
+
+.slide {
+    top: 40%;
+}
+
+.slideContent {
+    padding: 0;
+}
+
+.pro {
+    color: #008200;
+}
+
+.cons {
+    color: #ff0000;
+}
