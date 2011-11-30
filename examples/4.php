@@ -17,7 +17,7 @@ foreach($worldGreetings as $worldGreeting) {
     echo ' - ' . $worldGreeting->getId() . PHP_EOL;
 }
 
-echo 'Found ' . count($testGreetings) . ' "Hello World!" greetings:' . PHP_EOL;
+echo 'Found ' . count($testGreetings) . ' "Hello Test!" greetings:' . PHP_EOL;
 foreach($testGreetings as $testGreeting) {
     echo ' - ' . $testGreeting->getId() . PHP_EOL;
 }
