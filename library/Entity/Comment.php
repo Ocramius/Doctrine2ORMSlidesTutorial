@@ -2,6 +2,7 @@
 namespace Entity;
 
 use Entity\User,
+    InvalidArgumentException,
     Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -51,7 +52,7 @@ class Comment
     /**
      * @param string $content
      */
-    public function setName($content) {
+    public function setContent($content) {
         $this->content = (string) $content;
     }
     
@@ -65,8 +66,12 @@ class Comment
     /**
      * @param User $user
      */
-    public function addPerson(User $user) {
-        $this->user = $user;
+    public function setUser($user) {
+        if($user === null || $user instanceof User) {
+            $this->user = $user;
+        } else {
+            throw new InvalidArgumentException('$user must be instance of Entity\User or null!');
+        }
     }
 
 }

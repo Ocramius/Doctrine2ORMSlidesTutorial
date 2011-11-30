@@ -68,7 +68,7 @@ class User
     /**
      * @param Comment $comment
      */
-    public function addPerson(Comment $comment) {
+    public function addComment(Comment $comment) {
         $this->comments->add($comment);
         $comment->setUser($this);
     }
