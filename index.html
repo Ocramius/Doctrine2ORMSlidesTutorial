@@ -1,44 +1,66 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
     <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <title>Doctrine 2 ORM Tutorial</title>
         
-        <!-- jQuery + history plugin -->
+        <!-- jQuery + jQuery history -->
         <script type="text/javascript" src="vendor/slippy/src/jquery.min.js"></script>
         <script type="text/javascript" src="vendor/slippy/src/jquery.history.js"></script>
 
-        <!-- Slippy core js file -->
+        <!-- Slippy -->
         <script type="text/javascript" src="vendor/slippy/src/slippy.js"></script>
-
-        <!-- Slippy structural styles -->
         <link type="text/css" rel="stylesheet" href="vendor/slippy/src/slippy.css"/>
-
-        <!-- Slippy theme (feel free to change it) -->
         <link type="text/css" rel="stylesheet" href="vendor/slippy/src/slippy-pure.css"/>
         
-        <!-- Syntax highlighting core file  -->
-        <script type="text/javascript" src="vendor/slippy/src/highlighter/shCore.js"></script>
+        <!-- Syntax highlighting core and style -->
+        <script type="text/javascript" src="vendor/syntax-highlighter/scripts/XRegExp.js"></script>
+        <script type="text/javascript" src="vendor/syntax-highlighter/scripts/shCore.js"></script>
+        <!--<script type="text/javascript" src="vendor/syntax-highlighter/scripts/shAutoloader.js"></script>-->
+        <link type="text/css" rel="stylesheet" href="vendor/syntax-highlighter/styles/shCore.css"/>
+        <link type="text/css" rel="stylesheet" href="vendor/syntax-highlighter/styles/shThemeDefault.css"/>
         
-        <!-- Syntax highlighting core CSS and a theme -->
-        <link type="text/css" rel="stylesheet" href="vendor/slippy/src/highlighter/shCore.css"/>
-        <link type="text/css" rel="stylesheet" href="vendor/slippy/src/highlighter/shThemeEclipse.css"/>
-        
-        <!-- Syntax highlighting brushes, this one is only for php -->
-        <script type="text/javascript" src="vendor/slippy/src/highlighter/shBrushPhp.js"></script>
-        <script type="text/javascript" src="vendor/slippy/src/highlighter/shBrushBash.js"></script>
+        <!-- Highlighter brushes (php, bash) -->
+        <script type="text/javascript" src="vendor/syntax-highlighter/scripts/shBrushPhp.js"></script>
+        <script type="text/javascript" src="vendor/syntax-highlighter/scripts/shBrushBash.js"></script>
         
         <script type="text/javascript">
+            /*SyntaxHighlighter.autoloader(
+                'applescript            vendor/syntax-highlighter/scripts/shBrushAppleScript.js',
+                'actionscript3 as3        vendor/syntax-highlighter/scripts/shBrushAS3.js',
+                'bash shell                vendor/syntax-highlighter/scripts/shBrushBash.js',
+                'coldfusion cf            vendor/syntax-highlighter/scripts/shBrushColdFusion.js',
+                'cpp c                    vendor/syntax-highlighter/scripts/shBrushCpp.js',
+                'c# c-sharp csharp        vendor/syntax-highlighter/scripts/shBrushCSharp.js',
+                'css                    vendor/syntax-highlighter/scripts/shBrushCss.js',
+                'delphi pascal            vendor/syntax-highlighter/scripts/shBrushDelphi.js',
+                'diff patch pas            vendor/syntax-highlighter/scripts/shBrushDiff.js',
+                'erl erlang                vendor/syntax-highlighter/scripts/shBrushErlang.js',
+                'groovy                    vendor/syntax-highlighter/scripts/shBrushGroovy.js',
+                'java                    vendor/syntax-highlighter/scripts/shBrushJava.js',
+                'jfx javafx                vendor/syntax-highlighter/scripts/shBrushJavaFX.js',
+                'js jscript javascript    vendor/syntax-highlighter/scripts/shBrushJScript.js',
+                'perl pl                vendor/syntax-highlighter/scripts/shBrushPerl.js',
+                'php                    vendor/syntax-highlighter/scripts/shBrushPhp.js',
+                'text plain                vendor/syntax-highlighter/scripts/shBrushPlain.js',
+                'py python                vendor/syntax-highlighter/scripts/shBrushPython.js',
+                'ruby rails ror rb        vendor/syntax-highlighter/scripts/shBrushRuby.js',
+                'scala                    vendor/syntax-highlighter/scripts/shBrushScala.js',
+                'sql                    vendor/syntax-highlighter/scripts/shBrushSql.js',
+                'vb vbnet                vendor/syntax-highlighter/scripts/shBrushVb.js',
+                'xml xhtml xslt html    vendor/syntax-highlighter/scripts/shBrushXml.js'
+            );*/
             $(function() {
                 $(".slide").slippy({});
+                SyntaxHighlighter.defaults['toolbar'] = false;
                 SyntaxHighlighter.all();
             });
         </script>
         <style type="text/css">
-            pre {
+            /*pre {
                 font-size: 60%;
                 line-height: 0.8;
-            }
+            }*/
             .pro {
                 color: #008200;
             }
@@ -299,7 +321,7 @@ $user-&gt;save();
                 <li class="pro">
                     Doctrine 2 is a Data Mapper implementation:
                     <br/>
-                    <img src="image/databaseMapperSketch.gif" alt="Data Mapper" width="60%" style="margin: 10px;"/>
+                    <img src="image/databaseMapperSketch.gif" alt="Data Mapper" style="width: 60%; margin: 10px;"/>
                 </li>
                 <li class="pro">
                     Used the well known Java Persistence API (JPA, aka JSR 317) as initial blueprint
