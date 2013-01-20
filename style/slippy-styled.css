@@ -12,6 +12,7 @@
 
 .slideContent {
     padding: 0;
+	overflow:auto;
 }
 
 .pro {
