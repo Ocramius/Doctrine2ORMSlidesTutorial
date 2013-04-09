@@ -374,7 +374,9 @@ mkdir library/Entity
 touch library/Entity/Greeting.php
 mkdir library/EntityProxy
 chmod +w library/EntityProxy
-git clone https://github.com/doctrine/doctrine2.git --recursive library/doctrine-orm
+echo "{}" &gt; composer.json
+curl -s https://getcomposer.org/installer | php
+./composer.phar require doctrine/orm:2.*
 touch bootstrap.php
             </pre>
         </div>
@@ -513,12 +515,11 @@ use Doctrine\ORM\Tools\Setup,
     Doctrine\Common\ClassLoader;
 
 //autoloading
-require_once __DIR__ . '/library/doctrine-orm/lib/Doctrine/ORM/Tools/Setup.php';
-Setup::registerAutoloadGit(__DIR__ . 'library/doctrine-orm');
+require_once __DIR__ . '/vendor/autoload.php';
 $loader = new ClassLoader('Entity', __DIR__ . '/library');
-$loader->register();
+$loader-&gt;register();
 $loader = new ClassLoader('EntityProxy', __DIR__ . '/library');
-$loader->register();
+$loader-&gt;register();
             </pre>
         </div>
         <div class="slide">
@@ -568,12 +569,11 @@ use Doctrine\ORM\Tools\Setup,
     Doctrine\Common\ClassLoader;
 
 //autoloading
-require_once __DIR__ . '/library/doctrine-orm/lib/Doctrine/ORM/Tools/Setup.php';
-Setup::registerAutoloadGit(__DIR__ . '/library/doctrine-orm');
+require_once __DIR__ . '/vendor/autoload.php';
 $loader = new ClassLoader('Entity', __DIR__ . '/library');
-$loader->register();
+$loader-&gt;register();
 $loader = new ClassLoader('EntityProxy', __DIR__ . '/library');
-$loader->register();
+$loader-&gt;register();
 
 //configuration
 $config = new Configuration();
