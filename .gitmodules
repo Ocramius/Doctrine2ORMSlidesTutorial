@@ -1,9 +1,6 @@
 [submodule "vendor/slippy"]
 	path = vendor/slippy
 	url = https://github.com/Seldaek/slippy.git
-[submodule "library/doctrine-orm"]
-	path = library/doctrine-orm
-	url = https://github.com/doctrine/doctrine2.git
 [submodule "vendor/syntax-highlighter"]
 	path = vendor/syntax-highlighter
 	url = https://github.com/alexgorbatchev/SyntaxHighlighter.git
