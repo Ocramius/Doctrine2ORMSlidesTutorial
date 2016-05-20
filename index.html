@@ -3,7 +3,7 @@
     <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <title>Doctrine 2 ORM Tutorial</title>
-        
+
         <!-- jQuery + jQuery history -->
         <script type="text/javascript" src="vendor/slippy/src/jquery.min.js"></script>
         <script type="text/javascript" src="vendor/slippy/src/jquery.history.js"></script>
@@ -12,18 +12,18 @@
         <script type="text/javascript" src="vendor/slippy/src/slippy.js"></script>
         <link type="text/css" rel="stylesheet" href="vendor/slippy/src/slippy.css"/>
         <link type="text/css" rel="stylesheet" href="vendor/slippy/src/slippy-pure.css"/>
-        
+
         <!-- Syntax highlighting core and style -->
         <script type="text/javascript" src="vendor/syntax-highlighter/scripts/XRegExp.js"></script>
         <script type="text/javascript" src="vendor/syntax-highlighter/scripts/shCore.js"></script>
         <!--<script type="text/javascript" src="vendor/syntax-highlighter/scripts/shAutoloader.js"></script>-->
         <link type="text/css" rel="stylesheet" href="vendor/syntax-highlighter/styles/shCore.css"/>
         <link type="text/css" rel="stylesheet" href="vendor/syntax-highlighter/styles/shCoreMDUltra.css"/>
-        
+
         <!-- Highlighter brushes (php, bash) -->
         <script type="text/javascript" src="vendor/syntax-highlighter/scripts/shBrushPhp.js"></script>
         <script type="text/javascript" src="vendor/syntax-highlighter/scripts/shBrushBash.js"></script>
-        
+
         <script type="text/javascript">
             /*SyntaxHighlighter.autoloader(
                 'applescript            vendor/syntax-highlighter/scripts/shBrushAppleScript.js',
@@ -56,9 +56,9 @@
                 SyntaxHighlighter.all();
             });
 
-			
+
         </script>
-        
+
         <!-- Custom styling -->
         <link type="text/css" rel="stylesheet" href="style/slippy-styled.css"/>
     </head>
@@ -118,17 +118,17 @@ mysql_query('INSERT INTO comments (user_id, content) VALUES (' . mysql_insert_id
             <pre class="brush: php">
 try {
     $dbh = new PDO('mysql:host=localhost;dbname=test', 'user', 'password');
-    
+
     //simple example
     $sth = $dbh-&gt;prepare('INSERT INTO greetings (content) VALUES (:content);
     $sth-&gt;execute(array(':content' =&gt; $_POST['content']));
-    
+
     //comments example
     $sth = $dbh-&gt;prepare('INSERT INTO users (username) VALUES (:username)');
     $sth-&gt;execute(array(':username' =&gt; $_POST['username']));
     $sth = $dbh-&gt;prepare('INSERT INTO comments (user_id, content) VALUES (user_id, :content)');
     $sth-&gt;execute(array(':user_id' =&gt; $dbh-&gt;lastInsertId(), ':content' =&gt; $_POST['content']);
-    
+
 } catch (PDOException $e) {
     echo $e-&gt;getMessage();
 }
@@ -179,7 +179,7 @@ class Greeting extends Doctrine_Record
             )
         );
     }
-    
+
 }
             </pre>
         </div>
@@ -208,7 +208,7 @@ class User extends Doctrine_Record
             )
         );
     }
-    
+
     public function setUp()
     {
         $this-&gt;hasMany(
@@ -249,7 +249,7 @@ class Comment extends Doctrine_Record
             )
         );
     }
-    
+
     public function setUp()
     {
         $this-&gt;hasOne(
@@ -391,10 +391,10 @@ class Greeting
 {
     /** @var int */
     private $id;
-    
+
     /** @var string */
     private $content;
-    
+
 }
             </pre>
         </div>
@@ -407,38 +407,38 @@ namespace Entity;
 
 class Greeting
 {
-    
+
     /** @var int */
     private $id;
-    
+
     /** @var string */
     private $content;
-    
+
     public function __construct($content) {
         $this->setContent($content);
     }
-    
+
     /**
      * @return int
      */
     public function getId() {
         return $this->id;
     }
-    
+
     /**
      * @return string
      */
     public function getContent() {
         return $this->content;
     }
-    
+
     /**
      * @param string $content
      */
     public function setContent($content) {
         $this->content = (string) $content;
     }
-    
+
 }
             </pre>
         </div>
@@ -456,7 +456,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Greeting
 {
-    
+
     /**
      * @ORM\Id()
      * @ORM\Column(type="integer")
@@ -464,38 +464,38 @@ class Greeting
      * @var int
      */
     private $id;
-    
+
     /**
      * @ORM\Column(type="string", length=255)
      * @var string
      */
     private $content;
-    
+
     public function __construct($content) {
         $this->setContent($content);
     }
-    
+
     /**
      * @return int
      */
     public function getId() {
         return $this->id;
     }
-    
+
     /**
      * @return string
      */
     public function getContent() {
         return $this->content;
     }
-    
+
     /**
      * @param string $content
      */
     public function setContent($content) {
         $this->content = (string) $content;
     }
-    
+
 }
             </pre>
         </div>
@@ -869,32 +869,32 @@ if(!empty($greetings)) {
 /** @ORM\Entity */
 class User
 {
-    
+
     /** @ORM\Id() @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO") @var int */
     private $id;
-    
+
     /** @ORM\Column(type="string", length=255) @var string */
     private $login;
-    
+
     /**
      * @ORM\OneToMany(targetEntity="Entity\Comment", mappedBy="user")
      * @var Collection
      */
     private $comments;
-    
+
     public function __construct($login) {
         //Initializing collection. Doctrine recognizes Collections, not arrays!
         $this->comments = new ArrayCollection();
         $this->setLogin($login);
     }
-    
+
     //Getters and setters
-    
+
     /** @return Collection */
     public function getComments() {
         return $this->comments;
     }
-    
+
     /** @param Comment $comment */
     public function addComment(Comment $comment) {
         $this->comments->add($comment);
@@ -909,30 +909,30 @@ class User
 /** @ORM\Entity */
 class Comment
 {
-    
+
     /** @ORM\Id()  @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO") @var int */
     private $id;
-    
+
     /** @ORM\Column(type="string", length=255) @var string */
     private $content;
-    
+
     /**
      * @ORM\ManyToOne(targetEntity="Entity\User", inversedBy="comments")
      * @var User|null
      */
     private $user;
-    
+
     public function __construct($content) {
         $this->setContent($content);
     }
-    
+
     //Setters, getters
-    
+
     /** @return User|null */
     public function getUser() {
         return $this->user;
     }
-    
+
     /** @param User $user */
     public function setUser(User $user) {
         if($user === null || $user instanceof User) {
